@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # MCMS-DDU - Membership Contribution Management System
 ## Dire Dawa City Administration
 
@@ -436,3 +437,6 @@ This project is developed for **Dire Dawa City Administration** internal use.
 ---
 
 **Developed with ❤️ for Dire Dawa City Administration Finance Bureau**
+=======
+# Membership_fee_management_system
+>>>>>>> 4ae2b04ecad3c66351fb30d1330f3988f80798bc
