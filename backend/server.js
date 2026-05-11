@@ -11,6 +11,18 @@ const path     = require('path');
 dotenv.config();
 
 const isProduction = process.env.NODE_ENV === 'production';
+
+// ── Crash Prevention ──────────────────────────────────────────────────────────
+// Node 15+ terminates on unhandled rejections. The DB connection runs async
+// in the background — if it fails, the rejection must not crash the server.
+process.on('unhandledRejection', (reason) => {
+  console.error('⚠️ Unhandled Promise Rejection:', reason?.message || reason);
+});
+process.on('uncaughtException', (err) => {
+  console.error('⚠️ Uncaught Exception:', err.message);
+  console.error(err.stack);
+});
+
 const app = express();
 
 // ── CORS ─────────────────────────────────────────────────────────────────────

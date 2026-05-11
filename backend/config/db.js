@@ -14,6 +14,11 @@ const sslConfig = process.env.DB_SSL === 'true'
   : {};
 
 // Shared Sequelize options
+const dialectOptions = {
+  ...sslConfig,
+  connectTimeout: 30000 // 30s connection timeout for Aiven remote MySQL
+};
+
 const sharedOptions = {
   dialect: 'mysql',
   logging: isProduction ? false : (msg) => console.log(`[SQL] ${msg}`),
@@ -28,7 +33,7 @@ const sharedOptions = {
     collate: 'utf8mb4_unicode_ci',
     timestamps: true
   },
-  dialectOptions: sslConfig
+  dialectOptions
 };
 
 // Build Sequelize instance from individual env vars (used on Render)
