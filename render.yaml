@@ -4,8 +4,8 @@ services:
     name: mcms-app
     env: node
     plan: free
-    buildCommand: bash build.sh
-    startCommand: node backend/server.js
+    buildCommand: "npm install --prefix frontend && npm run build --prefix frontend && npm install --prefix backend"
+    startCommand: "node backend/server.js"
     envVars:
       - key: NODE_ENV
         value: production
