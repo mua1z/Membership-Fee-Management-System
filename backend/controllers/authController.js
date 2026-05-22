@@ -56,7 +56,7 @@ exports.login = async (req, res) => {
     const cleanEmail = email.trim().toLowerCase();
     const user = await User.findOne({
       where: { email: cleanEmail },
-      include: [{ model: SectorUnit, as: 'assignedSectorUnit' }]
+      include: [{ model: SectorUnit, as: 'assignedSectorUnit', attributes: ['id', 'name'] }]
     });
     if (!user) {
       return res.status(401).json({ success: false, message: 'Invalid credentials.' });
@@ -95,7 +95,7 @@ exports.getMe = async (req, res) => {
   try {
     const user = await User.findByPk(req.userId, {
       attributes: { exclude: ['password'] },
-      include: [{ model: SectorUnit, as: 'assignedSectorUnit' }]
+      include: [{ model: SectorUnit, as: 'assignedSectorUnit', attributes: ['id', 'name'] }]
     });
     if (!user) {
       return res.status(401).json({ success: false, message: 'User not found.' });
