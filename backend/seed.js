@@ -1,6 +1,6 @@
 // seed.js - Sample Data Seeder (MySQL / Sequelize Migration)
 const dotenv = require('dotenv');
-dotenv.config(); // Load .env BEFORE requiring db.js (which reads env vars)
+dotenv.config();
 
 const { connectDB, sequelize } = require('./config/db');
 const Member = require('./models/Member');
@@ -496,6 +496,13 @@ async function seed() {
     // Connect to MySQL
     await connectDB();
 
+    // Idempotent guard: skip if admin already exists
+    const existingAdmin = await User.findOne({ where: { email: 'admin@mcms.ddu' } });
+    if (existingAdmin) {
+      console.log('Database already seeded (admin user found). Skipping.');
+      process.exit(0);
+    }
+
     // Clear in FK-safe order: children before parents
     await Receipt.destroy({ where: {} });
     await Payment.destroy({ where: {} });
@@ -503,7 +510,7 @@ async function seed() {
     await Member.destroy({ where: {} });
     await User.destroy({ where: {} });
     await Setting.destroy({ where: {} });
-    console.log('🗑 Cleared existing data');
+    console.log('Cleared existing data');
 
     // Create admin user
     const adminUser = await User.create({

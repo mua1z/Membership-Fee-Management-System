@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext'
 import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
 import PageLoader from '../components/PageLoader'
+import OrganizationTree from '../components/OrganizationTree'
 import { Users, DollarSign, TrendingUp, AlertTriangle, Building2 } from 'lucide-react'
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
@@ -126,16 +127,22 @@ export default function Dashboard() {
       <motion.div variants={itemVariants} className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-xl font-black text-slate-900 dark:text-white tracking-tight leading-none mb-2">
-            {t('common.prosperity_party')} <span className="text-[var(--gold)]">{t('common.app_title')}</span>
+            {t('common.prosperity_party')}         <span className="text-[var(--gold)]">{t('common.app_title')}</span>
+            <span className="text-[10px] text-slate-400 dark:text-slate-500 font-medium ml-2 bg-slate-50 dark:bg-slate-800 px-2 py-0.5 rounded-full">
+              {currentLang === 'am' ? 'የድሬዳዋ አስተዳደር መንግስት ተቋማት' : 'Dire Dawa Administration Institutions'}
+            </span>
           </h1>
           {user?.role === 'admin' && (
             <p className="text-[11px] text-slate-500 font-medium">
-              Administrative overview of the Dire Dawa branch performance.
+              {currentLang === 'am'
+                ? 'የድሬዳዋ አስተዳደር መንግስት ተቋማት የአባልነት መዋጮ አስተዳደር ስርዓት'
+                : 'Dire Dawa Administration Institutions membership contribution management system'
+              }
             </p>
           )}
           {user?.role === 'sector_officer' && (
             <p className="text-[11px] text-slate-500 font-medium">
-              Sector: <span className="text-[var(--gold)] font-bold">{user?.assignedSectorUnit?.name || 'Assigned Sector'}</span> Overview
+              {currentLang === 'am' ? 'ዘርፍ' : 'Sector'}: <span className="text-[var(--gold)] font-bold">{user?.assignedSectorUnit?.name || 'Assigned Sector'}</span>
             </p>
           )}
         </div>
@@ -249,6 +256,8 @@ export default function Dashboard() {
                     _id: d._id === 'Institution' ? t('common.institution')
                        : d._id === 'Rural Cluster' ? t('common.rural')
                        : d._id === 'Urban Woreda' ? t('common.urban')
+                       : d._id === 'Secondary School' ? t('common.secondary_school')
+                       : d._id === 'Health Institution' ? t('common.health_institution')
                        : d._id || 'N/A'
                   }))}
                   cx="50%" cy="50%"
@@ -344,6 +353,13 @@ export default function Dashboard() {
               <Bar dataKey="count" fill="#8b5cf6" name={t('common.members')} radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
+        </motion.div>
+      )}
+
+      {/* Organization Hierarchy Tree */}
+      {!isSectorOfficer && (
+        <motion.div variants={itemVariants}>
+          <OrganizationTree />
         </motion.div>
       )}
     </motion.div>

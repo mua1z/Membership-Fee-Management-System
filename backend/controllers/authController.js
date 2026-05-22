@@ -54,7 +54,10 @@ exports.login = async (req, res) => {
     }
 
     const cleanEmail = email.trim().toLowerCase();
-    const user = await User.findOne({ where: { email: cleanEmail } });
+    const user = await User.findOne({
+      where: { email: cleanEmail },
+      include: [{ model: SectorUnit, as: 'assignedSectorUnit' }]
+    });
     if (!user) {
       return res.status(401).json({ success: false, message: 'Invalid credentials.' });
     }
@@ -68,12 +71,6 @@ exports.login = async (req, res) => {
       return res.status(403).json({ success: false, message: 'Account is deactivated.' });
     }
 
-    // Fetch assigned sector unit if applicable
-    let assignedSectorUnit = null;
-    if (user.sectorUnitId) {
-      assignedSectorUnit = await SectorUnit.findByPk(user.sectorUnitId);
-    }
-
     const token = generateToken(user.id);
 
     res.json({
@@ -83,7 +80,7 @@ exports.login = async (req, res) => {
         user: { 
           id: user.id, username: user.username, email: user.email, 
           fullName: user.fullName, role: user.role, sectorUnitId: user.sectorUnitId, 
-          profilePic: user.profilePic, assignedSectorUnit 
+          profilePic: user.profilePic, assignedSectorUnit: user.assignedSectorUnit 
         },
         token
       }
@@ -97,21 +94,14 @@ exports.login = async (req, res) => {
 exports.getMe = async (req, res) => {
   try {
     const user = await User.findByPk(req.userId, {
-      attributes: { exclude: ['password'] }
+      attributes: { exclude: ['password'] },
+      include: [{ model: SectorUnit, as: 'assignedSectorUnit' }]
     });
     if (!user) {
       return res.status(401).json({ success: false, message: 'User not found.' });
     }
 
-    let assignedSectorUnit = null;
-    if (user.sectorUnitId) {
-      assignedSectorUnit = await SectorUnit.findByPk(user.sectorUnitId);
-    }
-
-    const userData = user.toJSON();
-    userData.assignedSectorUnit = assignedSectorUnit;
-
-    res.json({ success: true, data: userData });
+    res.json({ success: true, data: user });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

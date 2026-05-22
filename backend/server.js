@@ -75,8 +75,7 @@ Payment.hasMany(Receipt,   { foreignKey: 'paymentDbId', as: 'receipts',    onDel
 Contribution.belongsTo(Member, { foreignKey: 'memberDbId', as: 'memberInfo',    onDelete: 'CASCADE' });
 Member.hasMany(Contribution,   { foreignKey: 'memberDbId', as: 'contributions', onDelete: 'CASCADE' });
 
-// Connect to DB (async - server starts regardless, DB connects in background)
-connectDB();
+// (connection now happens in start() below to avoid race conditions)
 
 // ── Auto-Seed Admin Users (Free tier: no shell/SSH) ─────────────────────────
 // Only runs on production first deploy when DB_SYNC=true.
@@ -111,9 +110,7 @@ const seedInitialUsers = async () => {
   }
 };
 
-if (isProduction && process.env.DB_SYNC === 'true') {
-  setTimeout(seedInitialUsers, 3000);
-}
+// Moved into start() below
 
 // ── API Routes ────────────────────────────────────────────────────────────────
 // IMPORTANT: All API routes MUST be defined BEFORE the SPA fallback below
@@ -185,13 +182,24 @@ app.use((err, req, res, next) => {
 
 // ── Start Server ──────────────────────────────────────────────────────────────
 // Render injects PORT automatically - MUST use process.env.PORT
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, '0.0.0.0', () => {
-  console.log('==========================================');
-  console.log(`🚀 MCMS Server running on port ${PORT}`);
-  console.log(`📊 Environment : ${process.env.NODE_ENV}`);
-  console.log(`🗄️  Database   : ${process.env.DB_HOST}:${process.env.DB_PORT}`);
-  console.log('==========================================');
-});
+const PORT = process.env.PORT || 3000;
+
+const start = async () => {
+  await connectDB();
+
+  if (isProduction && process.env.DB_SYNC === 'true') {
+    setTimeout(seedInitialUsers, 3000);
+  }
+
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log('==========================================');
+    console.log(`🚀 MCMS Server running on port ${PORT}`);
+    console.log(`📊 Environment : ${process.env.NODE_ENV}`);
+    console.log(`🗄️  Database   : ${process.env.DB_HOST}:${process.env.DB_PORT}`);
+    console.log('==========================================');
+  });
+};
+
+start();
 
 module.exports = app;

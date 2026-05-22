@@ -330,6 +330,23 @@ exports.updateMember = async (req, res) => {
   }
 };
 
+// ─── Helper: delete member rows from any existing backup tables ────────────────
+async function deleteFromBackupTables(memberIds) {
+  try {
+    const [tables] = await sequelize.query("SHOW TABLES LIKE '%backup%'");
+    const backupTableNames = tables.map(t => Object.values(t)[0]);
+    for (const tableName of backupTableNames) {
+      if (Array.isArray(memberIds) && memberIds.length > 0) {
+        await sequelize.query(`DELETE FROM \`${tableName}\` WHERE id IN (${memberIds.join(',')})`);
+      } else {
+        await sequelize.query(`DELETE FROM \`${tableName}\``);
+      }
+    }
+  } catch (err) {
+    console.error('Error cleaning backup tables:', err.message);
+  }
+}
+
 // ─── Delete member ────────────────────────────────────────────────────────────
 exports.deleteMember = async (req, res) => {
   try {
@@ -350,6 +367,7 @@ exports.deleteMember = async (req, res) => {
     await Contribution.destroy({ where: whereMember });
     
     await member.destroy();
+    await deleteFromBackupTables(member.id);
     res.json({ success: true, message: 'Member deleted successfully' });
   } catch (error) {
     console.error('Delete Member Error:', error);
@@ -534,6 +552,7 @@ exports.bulkDeleteMembers = async (req, res) => {
     await Contribution.destroy({ where: whereMembers });
 
     const deletedCount = await Member.destroy({ where });
+    await deleteFromBackupTables(ids);
     
     res.json({ 
       success: true, 
@@ -560,6 +579,7 @@ exports.bulkDeleteAllMembers = async (req, res) => {
     await Contribution.destroy({ where: {} });
     
     const deletedCount = await Member.destroy({ where: {} });
+    await deleteFromBackupTables([]);
     
     res.json({ 
       success: true, 

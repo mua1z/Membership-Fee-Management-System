@@ -59,7 +59,9 @@ export default function MemberModal({ member, onClose, onSuccess }: MemberModalP
   const SECTOR_UNIT_LABELS: Record<string, string> = {
     'Institution': t('common.institution'),
     'Rural Cluster': t('common.rural'),
-    'Urban Woreda': t('common.urban')
+    'Urban Woreda': t('common.urban'),
+    'Secondary School': t('common.secondary_school'),
+    'Health Institution': t('common.health_institution')
   }
 
   const [formData, setFormData] = useState<Member>({
@@ -351,7 +353,7 @@ export default function MemberModal({ member, onClose, onSuccess }: MemberModalP
                   required={!member}
                 >
                   <option value="">{t('common.search')}...</option>
-                  {sectorTypes.map(t_obj => <option key={t_obj.id} value={t_obj.name}>{t_obj.name === 'Institution' ? t('common.institution') : t_obj.name === 'Rural Cluster' ? t('common.rural') : t_obj.name === 'Urban Woreda' ? t('common.urban') : t_obj.name}</option>)}
+                  {sectorTypes.map(t_obj => <option key={t_obj.id} value={t_obj.name}>{t_obj.name === 'Institution' ? t('common.institution') : t_obj.name === 'Rural Cluster' ? t('common.rural') : t_obj.name === 'Urban Woreda' ? t('common.urban') : t_obj.name === 'Secondary School' ? t('common.secondary_school') : t_obj.name === 'Health Institution' ? t('common.health_institution') : t_obj.name}</option>)}
                 </select>
               </div>
               <div>

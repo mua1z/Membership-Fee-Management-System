@@ -136,6 +136,8 @@ export default function Reports() {
                   {t_obj.name === 'Institution' ? t('common.institution')
                     : t_obj.name === 'Rural Cluster' ? t('common.rural')
                     : t_obj.name === 'Urban Woreda' ? t('common.urban')
+                    : t_obj.name === 'Secondary School' ? t('common.secondary_school')
+                    : t_obj.name === 'Health Institution' ? t('common.health_institution')
                     : t_obj.name}
                 </option>
               ))}

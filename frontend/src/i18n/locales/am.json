@@ -90,6 +90,8 @@
     "institution": "ተቋም",
     "rural": "ገጠር",
     "urban": "ከተማ",
+    "secondary_school": "ሁለተኛ ደረጃ ትምህርት ቤቶች",
+    "health_institution": "የጤና ተቋማት",
     "government": "መንግስት",
     "private": "ግል",
     "ngo": "መንግስታዊ ያልሆነ",
@@ -491,6 +493,8 @@
     "Employee Members": "መንግስት ሰራተኞች አባላት",
     "Employee Youth Wing Members": "መንግስት ሰራተኞች የወጣቶች ክንፍ አባላት",
     "Employee Women Wing Members": "መንግስት ሰራተኞች የሴቶች ክንፍ አባላት",
+    "Secondary School": "ሁለተኛ ደረጃ ትምህርት ቤቶች",
+    "Health Institution": "የጤና ተቋማት",
 
     "Woreda 1": "ወረዳ 1",
     "Woreda 2": "ወረዳ 2",

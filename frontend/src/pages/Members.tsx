@@ -87,12 +87,16 @@ interface Pagination {
 const SECTOR_UNIT_LABELS: Record<string, string> = {
   'Institution': 'common.government_office',
   'Rural Cluster': 'common.rural_sector',
-  'Urban Woreda': 'common.urban_woreda'
+  'Urban Woreda': 'common.urban_woreda',
+  'Secondary School': 'common.secondary_school',
+  'Health Institution': 'common.health_institution'
 }
 const SECTOR_TYPE_DISPLAY: Record<string, string> = {
   'Institution': 'common.government_institutions',
   'Rural Cluster': 'common.rural',
-  'Urban Woreda': 'common.urban'
+  'Urban Woreda': 'common.urban',
+  'Secondary School': 'common.secondary_school',
+  'Health Institution': 'common.health_institution'
 }
 
 export default function Members() {
@@ -139,8 +143,8 @@ export default function Members() {
   const [confirmBulkDelete, setConfirmBulkDelete] = useState(false)
   const [confirmClearAll, setConfirmClearAll] = useState(false)
 
-  const fetchMembers = async () => {
-    if (!hasFiltered) return
+  const fetchMembers = async (force = false) => {
+    if (!hasFiltered && !force) return
     setLoading(true)
     try {
       const params: any = { page: pagination.page, limit: pagination.limit, search }
@@ -935,7 +939,7 @@ export default function Members() {
         <MemberModal
           member={editingMember as any}
           onClose={() => { setShowMemberModal(false); setEditingMember(null) }}
-          onSuccess={() => { setShowMemberModal(false); setEditingMember(null); fetchMembers() }}
+          onSuccess={() => { setShowMemberModal(false); setEditingMember(null); fetchMembers(true) }}
         />
       )}
 
@@ -943,7 +947,7 @@ export default function Members() {
       {showImportModal && (
         <ImportModal
           onClose={() => setShowImportModal(false)}
-          onSuccess={() => { setShowImportModal(false); fetchMembers() }}
+          onSuccess={() => { setShowImportModal(false); setHasFiltered(true); setSelectedSectorType(''); setSelectedSectorId(''); setSelectedCategoryId(''); setPagination(prev => ({ ...prev, page: 1 })); fetchMembers(true) }}
         />
       )}
 
@@ -951,7 +955,7 @@ export default function Members() {
       {showFastEntryModal && (
         <FastEntryModal
           onClose={() => setShowFastEntryModal(false)}
-          onSuccess={() => { setShowFastEntryModal(false); fetchMembers() }}
+          onSuccess={() => { setShowFastEntryModal(false); fetchMembers(true) }}
           sectorTypes={sectorTypes}
           categories={categories}
           userRole={user?.role}

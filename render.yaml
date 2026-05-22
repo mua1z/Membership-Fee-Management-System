@@ -4,7 +4,7 @@ services:
     name: mcms-app
     env: node
     plan: free
-    buildCommand: npm run build
+    buildCommand: npm install --prefix frontend && npm run build --prefix frontend && npm install --prefix backend
     startCommand: npm start
     envVars:
       - key: NODE_ENV
@@ -22,6 +22,6 @@ services:
       - key: DB_SSL
         value: "true"
       - key: DB_SYNC
-        value: "false"
+        value: "true"
       - key: JWT_SECRET
         generateValue: true

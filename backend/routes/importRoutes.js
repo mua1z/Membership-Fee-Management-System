@@ -4,7 +4,7 @@ const router = express.Router();
 const multer = require('multer');
 const path = require('path');
 const { importMembers, getImportTemplate } = require('../controllers/importController');
-const { auth, authorize } = require('../middleware/auth');
+const { auth, authorize, scopeSector } = require('../middleware/auth');
 
 // Multer configuration for file uploads
 const storage = multer.diskStorage({
@@ -33,6 +33,7 @@ const upload = multer({
 });
 
 router.use(auth);
+router.use(scopeSector);
 
 // Create uploads directory if it doesn't exist
 const fs = require('fs');

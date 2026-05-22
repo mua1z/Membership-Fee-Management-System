@@ -90,6 +90,8 @@
     "institution": "Institution",
     "rural": "Rural",
     "urban": "Urban",
+    "secondary_school": "Secondary School",
+    "health_institution": "Health Institution",
     "government": "Government",
     "private": "Private",
     "ngo": "NGO",
@@ -491,6 +493,8 @@
     "Employee Members": "Employee Members",
     "Employee Youth Wing Members": "Employee Youth Wing Members",
     "Employee Women Wing Members": "Employee Women Wing Members",
+    "Secondary School": "Secondary School",
+    "Health Institution": "Health Institution",
 
     "Woreda 1": "Woreda 1",
     "Woreda 2": "Woreda 2",

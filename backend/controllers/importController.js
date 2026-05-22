@@ -34,21 +34,21 @@ function flattenMemberData(data) {
     delete flat.financial;
   }
   if (data.contribution) {
-    flat.contributionMonthlyFee  = data.contribution.monthlyFee  ?? 0;
-    flat.contributionPercentage  = data.contribution.percentage  ?? 0;
-    flat.contributionAnnualFee   = data.contribution.annualFee   ?? 0;
-    flat.contributionHqShare     = data.contribution.hqShare     ?? 0;
-    flat.contributionBranchShare = data.contribution.branchShare ?? 0;
+    flat.contributionMonthlyFee  = data.contribution.monthlyFee  || 0;
+    flat.contributionPercentage  = data.contribution.percentage  || 0;
+    flat.contributionAnnualFee   = data.contribution.annualFee   || 0;
+    flat.contributionHqShare     = data.contribution.hqShare     || 0;
+    flat.contributionBranchShare = data.contribution.branchShare || 0;
     delete flat.contribution;
   }
   if (data.netSalary) {
-    flat.netSalaryGrossSalary      = data.netSalary.grossSalary      ?? 0;
-    flat.netSalaryPensionDeduction = data.netSalary.pensionDeduction ?? 0;
-    flat.netSalaryTaxDeduction     = data.netSalary.taxDeduction     ?? 0;
-    flat.netSalaryTotalDeductions  = data.netSalary.totalDeductions  ?? 0;
-    flat.netSalaryNetSalary        = data.netSalary.netSalary        ?? 0;
-    flat.netSalaryContributionFee  = data.netSalary.contributionFee  ?? 0;
-    flat.netSalaryFinalNetSalary   = data.netSalary.finalNetSalary   ?? 0;
+    flat.netSalaryGrossSalary      = data.netSalary.grossSalary      || 0;
+    flat.netSalaryPensionDeduction = data.netSalary.pensionDeduction || 0;
+    flat.netSalaryTaxDeduction     = data.netSalary.taxDeduction     || 0;
+    flat.netSalaryTotalDeductions  = data.netSalary.totalDeductions  || 0;
+    flat.netSalaryNetSalary        = data.netSalary.netSalary        || 0;
+    flat.netSalaryContributionFee  = data.netSalary.contributionFee  || 0;
+    flat.netSalaryFinalNetSalary   = data.netSalary.finalNetSalary   || 0;
     delete flat.netSalary;
   }
   if (data.wing) {
@@ -58,6 +58,9 @@ function flattenMemberData(data) {
   }
   delete flat._id;
   delete flat.id;
+  delete flat.manualFinancial;
+  delete flat.rawBranch;
+  delete flat.rawCategory;
   return flat;
 }
 
@@ -171,6 +174,11 @@ exports.importMembers = async (req, res) => {
     let settings = await Setting.findOne();
     if (!settings) settings = await Setting.create({});
 
+    // ── First pass: parse all rows and collect phones/names ───────────────
+    const parsedRows = [];
+    const allPhones = [];
+    const allNames = [];
+
     for (let i = 0; i < data.length; i++) {
       const row    = data[i];
       const rowNum = i + 2;
@@ -180,29 +188,47 @@ exports.importMembers = async (req, res) => {
 
         const fullName = memberData.fullName;
         if (!fullName || fullName === 'Unknown') {
-          results.errors.push({ row: rowNum, error: 'Missing required field: Full Name' }); continue;
+          results.errors.push({ row: rowNum, error: 'Missing required field: Full Name' });
+          continue;
         }
         if (!memberData.phone || memberData.phone.trim() === '') {
           memberData.phone = `NOPHONE-${Date.now()}-${i}-${Math.floor(Math.random() * 100000)}`;
         }
 
-        // Check for duplicates (Phone or Name)
-        const existing = await Member.findOne({ 
-          where: { 
-            [Op.or]: [
-              { phone: memberData.phone },
-              { fullName: memberData.fullName }
-            ]
-          } 
-        });
+        allPhones.push(memberData.phone);
+        allNames.push(memberData.fullName.toLowerCase());
+        parsedRows.push({ row, rowNum, memberData, index: i });
+      } catch (error) {
+        results.errors.push({ row: rowNum, error: error.message });
+      }
+    }
 
-        if (existing) {
-          const matchedBy = existing.phone === memberData.phone ? `Phone '${memberData.phone}'` : `Name '${memberData.fullName}'`;
-          results.duplicates.push({ row: rowNum, name: memberData.fullName, error: `Duplicate Found: ${matchedBy} is already registered.` }); 
+    // ── Bulk duplicate check (ONE query instead of N) ─────────────────────
+    const existingMembers = await Member.findAll({
+      where: {
+        [Op.or]: [
+          { phone: { [Op.in]: allPhones } },
+          { fullName: { [Op.in]: allNames } }
+        ]
+      },
+      attributes: ['phone', 'fullName']
+    });
+    const existingPhones = new Set(existingMembers.map(m => m.phone));
+    const existingLowerNames = new Set(existingMembers.map(m => m.fullName.toLowerCase()));
+
+    // ── Second pass: in-memory processing, no DB calls per row ────────────
+    const membersToCreate = [];
+
+    for (const { row, rowNum, memberData, index: i } of parsedRows) {
+      try {
+        if (existingPhones.has(memberData.phone)) {
+          results.duplicates.push({ row: rowNum, name: memberData.fullName, error: `Duplicate Found: Phone '${memberData.phone}' is already registered.` });
           continue;
         }
-
-
+        if (existingLowerNames.has(memberData.fullName.toLowerCase())) {
+          results.duplicates.push({ row: rowNum, name: memberData.fullName, error: `Duplicate Found: Name '${memberData.fullName}' is already registered.` });
+          continue;
+        }
 
         // Resolve Sector Unit ID with Translation Support
         let sectorUnitId = explicitSectorUnitId;
@@ -272,12 +298,10 @@ exports.importMembers = async (req, res) => {
 
         const classification = ClassificationEngine.autoClassifyAndCalculate(memberData, settings);
 
-        // Override classification values with Excel data if present (Manual Import Case)
-        // English and Amharic Keys support
         const manualPercentage = Number(row['Contribution %'] || row.ContributionPercentage || row['የክፍያ % መጠን']);
         const manualMonthlyFee = Number(row['Monthly Contribution (ETB)'] || row.MonthlyContribution || row['የአባሉ ወርሃዊ ክፍያ']);
         const manualNetSalary  = Number(row['Net Monthly Salary (ETB)']   || row.NetSalary || row['የተጣራ የወር ደመወዝ መጠን']);
-        const manualTax        = Number(row['Income Tax (ETB)']           || row.IncomeTax || row['የደመወዝ ገቢ ግብር']);
+        const manualTax        = Number(row['Income Tax (ETB)']           || row.IncomeTax || row['የደመወዝ ገቢ ግብር'] || row['የደሞዝ ገቢ ግብር']);
         const manualPension    = Number(row['Pension (ETB)']              || row.Pension || row['ጡረታ']);
 
         if (!isNaN(manualMonthlyFee) && manualMonthlyFee > 0) {
@@ -298,10 +322,12 @@ exports.importMembers = async (req, res) => {
 
         const flat = flattenMemberData({
           ...memberData,
+          memberId: `DD-${new Date().getFullYear()}-${Date.now()}-${i}-${Math.floor(1000 + Math.random() * 9000)}`,
           sectorUnitId,
-          branch:               excelUnitName, // Store original name
-          sector:               excelCategoryName, // Store original name
+          branch:               excelUnitName,
+          sector:               excelCategoryName,
           memberCategoryId,
+          cluster:              classification.cluster || 'N/A',
           subType:              classification.subType,
           classificationRuleId: classification.classificationRuleId,
           contribution: {
@@ -316,11 +342,36 @@ exports.importMembers = async (req, res) => {
           importedFrom: req.file.originalname
         });
 
-        await Member.create(flat);
-        results.success++;
+        if (membersToCreate.length === 0 && process.env.NODE_ENV !== 'test') {
+          const badKeys = Object.keys(flat).filter(k => k === 'NaN' || /^[0-9]+$/.test(k));
+          if (badKeys.length > 0) console.error('DEBUG: flat has suspicious keys:', badKeys, JSON.stringify(flat).slice(0, 500));
+          else console.log('DEBUG: first flat keys:', Object.keys(flat).join(', '));
+        }
+        membersToCreate.push(flat);
       } catch (error) {
         results.errors.push({ row: rowNum, error: error.message });
       }
+    }
+
+    // ── Batch insert (chunked to avoid max_allowed_packet overflow) ──────
+    if (membersToCreate.length > 0) {
+      const CHUNK_SIZE = 100;
+      let inserted = 0;
+      try {
+        for (let start = 0; start < membersToCreate.length; start += CHUNK_SIZE) {
+          const chunk = membersToCreate.slice(start, start + CHUNK_SIZE);
+          await Member.bulkCreate(chunk);
+          inserted += chunk.length;
+        }
+        results.success = inserted;
+        console.log(`Import: ${inserted} members inserted successfully from "${req.file.originalname}"`);
+      } catch (bulkError) {
+        console.error(`Import bulkCreate failed after ${inserted} inserts:`, bulkError.message);
+        if (inserted > 0) results.success = inserted;
+        results.errors.push({ row: 0, error: `Database insert failed after ${inserted} rows: ${bulkError.message}` });
+      }
+    } else {
+      results.success = 0;
     }
 
     res.json({
@@ -357,14 +408,16 @@ function mapExcelRowToMember(rawRow) {
   
   const genderRaw = String(getVal([
     'Sex', 'ጾታ', 'Sex / ጾታ', 
-    'Gender', 'ጾታ (ወ/ሴ)'
+    'Gender', 'ጾታ (ወ/ሴ)', 'ፆታ', 'ፆታ (ወ/ሴ)'
   ]) || '').trim();
   const gender = (genderRaw === 'ወ' || genderRaw === 'M' || genderRaw === 'Male' || genderRaw.includes('ወንድ')) ? 'Male' : 
                  (genderRaw === 'ሴ' || genderRaw === 'F' || genderRaw === 'Female' || genderRaw.includes('ሴት')) ? 'Female' : 'Male';
 
   const salary = Number(getVal([
     'Gross Salary', 'ጠቅላላ የወር ደመወዝ', 'Gross Salary / ጠቅላላ የወር ደመወዝ',
-    'Gross Monthly Salary (ETB)', 'Salary', 'GrossSalary', 'ጠቅላላ የወር ደመወዝ መጠን', 'ጠቅላላ ደመወዝ', 'ደመወዝ', 'የወር ደመወዝ', 'ጠቅላላ ደመወዝ'
+    'Gross Monthly Salary (ETB)', 'Salary', 'GrossSalary',
+    'ጠቅላላ የወር ደመወዝ መጠን', 'ጠቅላላ ደመወዝ', 'ደመወዝ', 'የወር ደመወዝ', 'ጠቅላላ ደመወዝ',
+    'ጥቅል የወር ደመወዝ መጠን', 'ጥቅል ደመወዝ'
   ])) || 0;
   
   const branch = getVal([
@@ -426,10 +479,10 @@ function mapExcelRowToMember(rawRow) {
     },
     // Manual overrides for financial results if provided in Excel
     manualFinancial: {
-      taxDeduction:     Number(getVal(['Income Tax', 'Tax', 'የደመወዝ ገቢ ግብር', 'ገቢ ግብር', 'ግብር'])),
+      taxDeduction:     Number(getVal(['Income Tax', 'Tax', 'የደመወዝ ገቢ ግብር', 'የደሞዝ ገቢ ግብር', 'ገቢ ግብር', 'ግብር'])),
       pensionDeduction: Number(getVal(['Pension', 'Pension (7%)', 'ጡረታ', 'ጡረታ 7%'])),
       netSalary:        Number(getVal(['Net Salary', 'NetSalary', 'የተጣራ የወር ደመወዝ መጠን', 'የተጣራ ደመወዝ'])),
-      percentage:       parseFloat(String(getVal(['Contribution %', 'Percentage', 'የመዋጮ % መጠን', 'መዋጮ %']) || '').replace('%', '')),
+      percentage:       parseFloat(String(getVal(['Contribution %', 'Percentage', 'የመዋጮ % መጠን', 'መዋጮ %', 'የክፍያ % መጠን']) || '').replace('%', '')),
       monthlyFee:       Number(getVal(['Monthly Contribution (ETB)', 'Monthly Contribution', 'Monthly Fee', 'የአባሉ ወርሃዊ ክፍያ', 'ወርሃዊ መዋጮ', 'መዋጮ', 'የአባሉ ወርሃዊ መዋጮ', 'Contribution In ETB']))
     },
     status:           'Active',

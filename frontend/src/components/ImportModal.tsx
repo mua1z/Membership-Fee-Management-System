@@ -47,6 +47,7 @@ export default function ImportModal({ onClose, onSuccess }: ImportModalProps) {
     if (e.target.files && e.target.files[0]) {
       setFile(e.target.files[0])
       setError('')
+      setResult(null)
     }
   }
 
@@ -66,10 +67,13 @@ export default function ImportModal({ onClose, onSuccess }: ImportModalProps) {
 
     try {
       const res = await api.post('/import', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
+        headers: { 'Content-Type': 'multipart/form-data' },
+        timeout: 120000,
       })
       setResult(res.data.data)
-      onSuccess()
+      if (res.data.data.success > 0) {
+        onSuccess()
+      }
     } catch (err: any) {
       setError(err.response?.data?.message || t('common.error'))
     } finally {

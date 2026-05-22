@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "MCMS DDU - Full Stack App",
   "scripts": {
-    "build": "cd frontend && NODE_ENV=development npm install && npm run build && cd ../backend && npm install",
+    "build": "npm install --prefix frontend && npm run build --prefix frontend && npm install --prefix backend",
     "start": "node backend/server.js",
     "dev:backend": "cd backend && npm run dev",
     "dev:frontend": "cd frontend && npm run dev"

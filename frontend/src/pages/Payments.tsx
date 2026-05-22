@@ -579,6 +579,8 @@ export default function Payments() {
                     {t_obj.name === 'Institution' ? t('common.institution')
                       : t_obj.name === 'Rural Cluster' ? t('common.rural')
                       : t_obj.name === 'Urban Woreda' ? t('common.urban')
+                      : t_obj.name === 'Secondary School' ? t('common.secondary_school')
+                      : t_obj.name === 'Health Institution' ? t('common.health_institution')
                       : t_obj.name}
                   </option>
                 ))}
@@ -598,7 +600,7 @@ export default function Payments() {
               >
                 <option value="">
                   {selectedSectorType
-                    ? (selectedSectorType === 'Institution' ? t('common.institution') : selectedSectorType === 'Rural Cluster' ? t('common.rural') : t('common.urban'))
+                    ? (selectedSectorType === 'Institution' ? t('common.institution') : selectedSectorType === 'Rural Cluster' ? t('common.rural') : selectedSectorType === 'Urban Woreda' ? t('common.urban') : selectedSectorType === 'Secondary School' ? t('common.secondary_school') : selectedSectorType === 'Health Institution' ? t('common.health_institution') : selectedSectorType)
                     : t('common.sector_unit')}
                 </option>
                 {sectors.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}

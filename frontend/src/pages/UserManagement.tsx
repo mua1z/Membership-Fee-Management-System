@@ -437,6 +437,8 @@ export default function UserManagement() {
                           {st.name === 'Institution' ? `🏛 ${t('common.government')}`
                             : st.name === 'Rural Cluster' ? `🌾 ${t('common.rural')}`
                             : st.name === 'Urban Woreda' ? `🏙 ${t('common.urban')}`
+                            : st.name === 'Secondary School' ? `🎓 ${t('common.secondary_school')}`
+                            : st.name === 'Health Institution' ? `🏥 ${t('common.health_institution')}`
                             : st.name}
                         </option>
                       ))}

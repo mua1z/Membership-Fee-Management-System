@@ -10,5 +10,6 @@ router.use(authorize('admin', 'sector_officer', 'expert'));
 
 router.get('/stats', getDashboardStats);
 router.get('/growth', getGrowthRate);
+router.get('/organization', require('../controllers/organizationController').getOrganization);
 
 module.exports = router;

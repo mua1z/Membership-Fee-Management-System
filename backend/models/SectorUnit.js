@@ -9,6 +9,11 @@ const SectorUnit = sequelize.define('SectorUnit', {
     type: DataTypes.INTEGER, 
     allowNull: false,
     references: { model: 'sector_types', key: 'id' }
+  },
+  parentId: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    references: { model: 'sector_units', key: 'id' }
   }
 }, {
   tableName: 'sector_units',

@@ -13,6 +13,7 @@ const getBaseURL = () => {
 
 const api = axios.create({
   baseURL: getBaseURL(),
+  timeout: 15000,
 });
 
 // Add token to requests
