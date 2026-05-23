@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import api from '../lib/api'
 import { useTranslation } from 'react-i18next'
 import { X, Download, Printer, FileText } from 'lucide-react'
+import { formatEthiopianDate } from '../utils/ethiopianCalendar'
 
 interface Receipt {
   _id: string
@@ -154,11 +155,7 @@ export default function ReceiptModal({ receiptId, onClose }: ReceiptModalProps) 
             <div>
               <p className="text-sm text-gray-600 dark:text-gray-400">{t('common.date_issued')}</p>
               <p className="font-bold">
-                {new Date(receipt.issuedAt).toLocaleDateString('en-US', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric'
-                })}
+                {formatEthiopianDate(receipt.issuedAt)}
               </p>
             </div>
           </div>
@@ -272,7 +269,7 @@ export default function ReceiptModal({ receiptId, onClose }: ReceiptModalProps) 
               {t('common.keep_receipt')}
             </p>
             <p className="text-center text-xs text-gray-500 dark:text-gray-500 mt-2">
-              Generated on: {new Date().toLocaleString()}
+              Generated on: {formatEthiopianDate(new Date())}
             </p>
           </div>
         </div>

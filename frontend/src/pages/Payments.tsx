@@ -2,13 +2,15 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import api from '../lib/api'
 import { useTranslation } from 'react-i18next'
-import { Plus, Search, Save, Check, Filter, Download, Loader2, ChevronLeft, ChevronRight, FileText, ArrowLeft, Trash2, Users, Wallet, Banknote } from 'lucide-react'
 import { motion } from 'framer-motion'
+import PageLoader from '../components/PageLoader'
 import { useAuth } from '../context/AuthContext'
-import PaymentModal from '../components/PaymentModal'
-import ReceiptModal from '../components/ReceiptModal'
-import ConfirmDialog from '../components/ConfirmDialog'
-import { getCurrentEthiopianPeriod } from '../utils/ethiopianCalendar'
+import {
+  Search, Filter, Plus, Download, Upload, ArrowUpDown, ChevronDown,
+  Eye, Printer, X, Save, Loader2, FileText, CreditCard, Wallet, Users,
+  Receipt, Calendar, CheckCircle2, AlertTriangle, Ban, Clock, Building2
+} from 'lucide-react'
+import { getCurrentEthiopianPeriod, formatEthiopianDate } from '../utils/ethiopianCalendar'
 
 interface Payment {
   _id?: string
@@ -886,7 +888,7 @@ export default function Payments() {
                       <td className="font-semibold">{payment.amount.toLocaleString()}</td>
                       <td>{payment.currency}</td>
                       <td>{getMethodBadge(payment.method)}</td>
-                      <td>{new Date(payment.paymentDate).toLocaleDateString()}</td>
+                      <td>{payment.paymentDate ? formatEthiopianDate(payment.paymentDate) : '-'}</td>
                       <td>{t(`common.eth_month_${payment.period.month}`)} / {payment.period.year}</td>
                       <td>{payment.receivedBy}</td>
                       <td>

@@ -6,6 +6,7 @@ import { motion } from 'framer-motion'
 import PageLoader from '../components/PageLoader'
 import { useAuth } from '../context/AuthContext'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
+import { getCurrentEthiopianPeriod, ETHIOPIAN_MONTHS_EN_LIST } from '../utils/ethiopianCalendar'
 
 const COLORS = ['#0ea5e9', '#22c55e', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#14b8a6', '#f97316']
 
@@ -18,8 +19,8 @@ export default function Reports() {
   const [defaulters, setDefaulters] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [reportType, setReportType] = useState('monthly')
-  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1)
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear())
+  const [selectedMonth, setSelectedMonth] = useState(getCurrentEthiopianPeriod().month)
+  const [selectedYear, setSelectedYear] = useState(getCurrentEthiopianPeriod().year)
   const [sectorTypes, setSectorTypes] = useState<any[]>([])
   const [selectedSectorType, setSelectedSectorType] = useState('')
   const [sectors, setSectors] = useState<any[]>([])
@@ -104,7 +105,8 @@ export default function Reports() {
       const receiptsWs = XLSX.utils.json_to_sheet(data.receipts)
       XLSX.utils.book_append_sheet(wb, receiptsWs, 'Receipts')
       
-      XLSX.writeFile(wb, `PP-Dire-Dawa-Branch-Full-Report-${new Date().toISOString().split('T')[0]}.xlsx`)
+      const now = new Date()
+      XLSX.writeFile(wb, `PP-Dire-Dawa-Branch-Full-Report-${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}.xlsx`)
     } catch (err) {
       console.error(err)
     }
@@ -197,9 +199,9 @@ export default function Reports() {
             className="input"
             style={{ display: reportType === 'monthly' ? 'block' : 'none' }}
           >
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(m => (
-              <option key={m} value={m}>
-                {t(`common.${['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'][m-1]}`)}
+            {ETHIOPIAN_MONTHS_EN_LIST.map((name, idx) => (
+              <option key={idx + 1} value={idx + 1}>
+                {t(`common.eth_month_${idx + 1}`, { defaultValue: name })}
               </option>
             ))}
           </select>
@@ -209,9 +211,9 @@ export default function Reports() {
             onChange={(e) => setSelectedYear(Number(e.target.value))}
             className="input"
           >
-            <option value={2026}>2026</option>
-            <option value={2025}>2025</option>
-            <option value={2024}>2024</option>
+            {Array.from({ length: 11 }, (_, i) => getCurrentEthiopianPeriod().year + 5 - i).map(y => (
+              <option key={y} value={y}>{y}</option>
+            ))}
           </select>
         </div>
       </div>

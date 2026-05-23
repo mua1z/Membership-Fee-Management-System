@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useTranslation } from 'react-i18next'
+import { getEthiopianYear } from '../utils/ethiopianCalendar'
 import { motion } from 'framer-motion'
 import { 
   ArrowRight, ShieldCheck, AlertCircle, Languages,
@@ -260,7 +261,7 @@ export default function Login() {
           </motion.div>
           
           <p className="text-center mt-10 text-slate-500 dark:text-slate-600 text-[8px] font-black uppercase tracking-[0.4em]">
-            &copy; {new Date().getFullYear()} {t('common.prosperity_party')} &bull; System V2.0
+            &copy; {getEthiopianYear()} {t('common.prosperity_party')} &bull; System V2.0
           </p>
         </motion.div>
       </div>

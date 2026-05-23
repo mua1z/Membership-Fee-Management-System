@@ -2,6 +2,7 @@
 const PDFDocument = require('pdfkit');
 const path = require('path');
 const fs = require('fs');
+const { formatEthiopianDate } = require('./ethiopianCalendar');
 
 class ReceiptPDF {
   /**
@@ -69,11 +70,7 @@ class ReceiptPDF {
         doc
           .fontSize(12)
           .font('Helvetica')
-          .text(`Date: ${new Date(receipt.issuedAt).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-          })}`, 60, doc.y)
+          .text(`Date: ${formatEthiopianDate(new Date(receipt.issuedAt))}`, 60, doc.y)
           .moveDown(2);
 
         // Member Information Section
@@ -110,7 +107,7 @@ class ReceiptPDF {
           .text(`Amount Paid: ${currency} ${payment.amount.toLocaleString()}`, { indent: 20 })
           .text(`Payment Method: ${payment.method}`, { indent: 20 })
           .text(`Payment Frequency: ${payment.frequency}`, { indent: 20 })
-          .text(`Payment Date: ${new Date(payment.paymentDate).toLocaleDateString()}`, { indent: 20 })
+          .text(`Payment Date: ${formatEthiopianDate(new Date(payment.paymentDate))}`, { indent: 20 })
           .text(`Period: ${payment.period.month}/${payment.period.year}`, { indent: 20 })
           .text(`Status: ${payment.status}`, { indent: 20 });
 
@@ -194,7 +191,7 @@ class ReceiptPDF {
         doc
           .fontSize(9)
           .font('Helvetica')
-          .text(`Generated on: ${new Date().toLocaleString()}`, { align: 'center' });
+          .text(`Generated on: ${formatEthiopianDate(new Date())}`, { align: 'center' });
 
         // Finalize PDF file
         doc.end();
@@ -274,11 +271,7 @@ class ReceiptPDF {
         doc
           .fontSize(12)
           .font('Helvetica')
-          .text(`Date: ${new Date(receipt.issuedAt).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-          })}`, 60, doc.y)
+          .text(`Date: ${formatEthiopianDate(new Date(receipt.issuedAt))}`, 60, doc.y)
           .moveDown(2);
 
         // Member Information Section
@@ -315,7 +308,7 @@ class ReceiptPDF {
           .text(`Amount Paid: ${currency} ${payment.amount.toLocaleString()}`, { indent: 20 })
           .text(`Payment Method: ${payment.method}`, { indent: 20 })
           .text(`Payment Frequency: ${payment.frequency}`, { indent: 20 })
-          .text(`Payment Date: ${new Date(payment.paymentDate).toLocaleDateString()}`, { indent: 20 })
+          .text(`Payment Date: ${formatEthiopianDate(new Date(payment.paymentDate))}`, { indent: 20 })
           .text(`Period: ${payment.period.month}/${payment.period.year}`, { indent: 20 })
           .text(`Status: ${payment.status}`, { indent: 20 });
 

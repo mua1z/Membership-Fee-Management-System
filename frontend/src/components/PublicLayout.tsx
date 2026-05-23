@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Outlet, useNavigate, Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Menu, X, Mail, Phone, Languages, Shield, Globe, Sun, Moon } from 'lucide-react';
+import { getEthiopianYear } from '../utils/ethiopianCalendar';
 
 export default function PublicLayout() {
   const { t, i18n } = useTranslation();
@@ -248,7 +249,7 @@ export default function PublicLayout() {
           
           <div className="pt-12 border-t border-slate-200 dark:border-white/5 flex flex-col md:flex-row justify-between items-center gap-8">
             <p className="text-[10px] text-slate-500 font-black uppercase tracking-[0.4em]">
-              &copy; {new Date().getFullYear()} Prosperity Party Dire Dawa Branch &bull; Developed by High-End Digital Team
+              &copy; {getEthiopianYear()} Prosperity Party Dire Dawa Branch &bull; Developed by High-End Digital Team
             </p>
             <div className="flex items-center gap-4 text-slate-500 dark:text-slate-600">
                <Shield size={16} />

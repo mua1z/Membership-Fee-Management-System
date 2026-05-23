@@ -7,7 +7,7 @@ const Receipt = require('../models/Receipt');
 const Contribution = require('../models/Contribution');
 const Setting = require('../models/Setting');
 const ClassificationEngine = require('../utils/classificationEngine');
-const { getEthiopianYear } = require('../utils/ethiopianCalendar');
+const { getEthiopianYear, getEthiopianMonth } = require('../utils/ethiopianCalendar');
 
 // ─── Helper: flatten nested member data → flat DB columns ────────────────────
 function flattenMemberData(data) {
@@ -150,8 +150,8 @@ exports.getMembers = async (req, res) => {
 
     const where = {};
 
-    const targetYear  = Number(req.query.billingYear)  || new Date().getFullYear();
-    const targetMonth = Number(req.query.billingMonth) || new Date().getMonth() + 1;
+    const targetYear  = Number(req.query.billingYear)  || getEthiopianYear();
+    const targetMonth = Number(req.query.billingMonth) || getEthiopianMonth();
 
     if (search) {
       where[Op.or] = [
@@ -392,7 +392,7 @@ exports.bulkCreateMembers = async (req, res) => {
       try {
         const memberData = members[i];
         const classification = ClassificationEngine.autoClassifyAndCalculate(memberData);
-        const currentYear = new Date().getFullYear();
+        const currentYear = getEthiopianYear();
         const paymentSchedule = generatePaymentSchedule(currentYear, memberData.paymentDay || 1);
 
         const flat = flattenMemberData({

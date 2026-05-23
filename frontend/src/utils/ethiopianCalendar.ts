@@ -1,80 +1,64 @@
 /**
  * Ethiopian Calendar Utility
- * Converts Gregorian dates to Ethiopian dates and vice versa for UI display.
+ * Converts Gregorian dates to Ethiopian dates for UI display.
  */
 
-export const ETHIOPIAN_MONTHS_EN = [
-  "Meskerem", "Tikimt", "Hidar", "Tahsas", "Tir", "Yekatit",
-  "Megabit", "Miazia", "Ginbot", "Sene", "Hamle", "Nehasse", "Pagume"
-];
+export const ETHIOPIAN_MONTHS_EN: Record<number, string> = {
+  1: "Meskerem", 2: "Tikimt", 3: "Hidar", 4: "Tahsas", 5: "Tir",
+  6: "Yekatit", 7: "Megabit", 8: "Miazia", 9: "Ginbot", 10: "Sene",
+  11: "Hamle", 12: "Nehasse", 13: "Pagume"
+};
 
-export const ETHIOPIAN_MONTHS_AM = [
-  "መስከረም", "ጥቅምት", "ህዳር", "ታህሳስ", "ጥር", "የካቲት",
-  "መጋቢት", "ሚያዝያ", "ግንቦት", "ሰኔ", "ሐምሌ", "ነሐሴ", "ጳጉሜ"
-];
+export const ETHIOPIAN_MONTHS_AM: Record<number, string> = {
+  1: "መስከረም", 2: "ጥቅምት", 3: "ህዳር", 4: "ታህሳስ", 5: "ጥር",
+  6: "የካቲት", 7: "መጋቢት", 8: "ሚያዝያ", 9: "ግንቦት", 10: "ሰኔ",
+  11: "ሐምሌ", 12: "ነሐሴ", 13: "ጳጉሜ"
+};
+
+export const ETHIOPIAN_MONTHS_EN_LIST = Object.values(ETHIOPIAN_MONTHS_EN);
+export const ETHIOPIAN_MONTHS_AM_LIST = Object.values(ETHIOPIAN_MONTHS_AM);
 
 /**
- * Very simple conversion for UI purposes (offset based)
- * For rigorous conversion, use a library, but this handles the 7-8 year gap.
+ * Compute the Julian Day Number for a Gregorian date.
  */
-export function getEthiopianYear(date: Date = new Date()): number {
-  const month = date.getMonth() + 1; // 1-indexed
-  const day = date.getDate();
-  const year = date.getFullYear();
+function gregToJDN(year: number, month: number, day: number): number {
+  const a = Math.floor((14 - month) / 12);
+  const y = year + 4800 - a;
+  const m = month + 12 * a - 3;
+  return day + Math.floor((153 * m + 2) / 5) + 365 * y + Math.floor(y / 4) - Math.floor(y / 100) + Math.floor(y / 400) - 32045;
+}
 
-  // Ethiopian New Year is Sept 11 or 12
-  if (month < 9 || (month === 9 && day < 11)) {
-    return year - 8;
-  }
-  return year - 7;
+/**
+ * Convert a Julian Day Number to Ethiopian calendar date.
+ */
+function jdnToEthiopian(jdn: number): { year: number; month: number; day: number } {
+  const epoch = 1723856;
+  const diff = jdn - epoch;
+  const year = Math.floor((4 * diff + 3) / 1461);
+  const remaining = diff - Math.floor((1461 * year) / 4);
+  const month = Math.floor(remaining / 30) + 1;
+  const day = remaining - 30 * (month - 1) + 1;
+  return { year: year + 1, month, day };
+}
+
+/**
+ * Convert a Gregorian date to Ethiopian calendar { year, month, day }.
+ */
+export function getEthiopianDate(date: Date = new Date()): { year: number; month: number; day: number } {
+  const jdn = gregToJDN(date.getFullYear(), date.getMonth() + 1, date.getDate());
+  return jdnToEthiopian(jdn);
+}
+
+export function getEthiopianYear(date: Date = new Date()): number {
+  return getEthiopianDate(date).year;
 }
 
 export function getEthiopianMonth(date: Date = new Date()): number {
-  // Approximate mapping for UI defaults
-  // Sept 11 - Oct 10 -> Month 1
-  // ...
-  // This is complex to do perfectly without a library, 
-  // but we can use a simpler approach for the "Current Period" default.
-  
-  const gMonth = date.getMonth(); // 0-indexed
-  const gDay = date.getDate();
-  
-  // Mapping of Gregorian months to Ethiopian months (approximate start)
-  // 0: Jan -> 5 (Tir)
-  // 1: Feb -> 6 (Yekatit)
-  // 2: Mar -> 7 (Megabit)
-  // 3: Apr -> 8 (Miazia)
-  // 4: May -> 9 (Ginbot)
-  // 5: Jun -> 10 (Sene)
-  // 6: Jul -> 11 (Hamle)
-  // 7: Aug -> 12 (Nehasse)
-  // 8: Sep -> 1 (Meskerem) - starts around 11th
-  // 9: Oct -> 2 (Tikimt)
-  // 10: Nov -> 3 (Hidar)
-  // 11: Dec -> 4 (Tahsas)
+  return getEthiopianDate(date).month;
+}
 
-  let ethMonth = 0;
-  switch(gMonth) {
-    case 0: ethMonth = gDay < 9 ? 4 : 5; break;
-    case 1: ethMonth = gDay < 8 ? 5 : 6; break;
-    case 2: ethMonth = gDay < 10 ? 6 : 7; break;
-    case 3: ethMonth = gDay < 9 ? 7 : 8; break;
-    case 4: ethMonth = gDay < 9 ? 8 : 9; break;
-    case 5: ethMonth = gDay < 8 ? 9 : 10; break;
-    case 6: ethMonth = gDay < 8 ? 10 : 11; break;
-    case 7: ethMonth = gDay < 7 ? 11 : 12; break;
-    case 8: ethMonth = gDay < 11 ? 12 : 1; break; // Pagume is month 13
-    case 9: ethMonth = gDay < 11 ? 1 : 2; break;
-    case 10: ethMonth = gDay < 10 ? 2 : 3; break;
-    case 11: ethMonth = gDay < 10 ? 3 : 4; break;
-  }
-  
-  // Pagume check (Sept 6 - Sept 10)
-  if (gMonth === 8 && gDay >= 6 && gDay <= 10) {
-    return 13;
-  }
-
-  return ethMonth;
+export function getEthiopianDay(date: Date = new Date()): number {
+  return getEthiopianDate(date).day;
 }
 
 export function getCurrentEthiopianPeriod() {
@@ -83,4 +67,15 @@ export function getCurrentEthiopianPeriod() {
     year: getEthiopianYear(now),
     month: getEthiopianMonth(now)
   };
+}
+
+/**
+ * Format a Gregorian date as an Ethiopian date string.
+ * e.g. "Meskerem 12, 2018" or "መስከረም 12, 2018"
+ */
+export function formatEthiopianDate(date: Date | string, lang: 'en' | 'am' = 'en'): string {
+  const d = typeof date === 'string' ? new Date(date) : date;
+  const eth = getEthiopianDate(d);
+  const months = lang === 'am' ? ETHIOPIAN_MONTHS_AM : ETHIOPIAN_MONTHS_EN;
+  return `${months[eth.month]} ${eth.day}, ${eth.year}`;
 }

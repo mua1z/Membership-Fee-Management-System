@@ -322,7 +322,7 @@ exports.importMembers = async (req, res) => {
 
         const flat = flattenMemberData({
           ...memberData,
-          memberId: `DD-${new Date().getFullYear()}-${Date.now()}-${i}-${Math.floor(1000 + Math.random() * 9000)}`,
+          memberId: `DD-${getEthiopianYear()}-${Date.now()}-${i}-${Math.floor(1000 + Math.random() * 9000)}`,
           sectorUnitId,
           branch:               excelUnitName,
           sector:               excelCategoryName,

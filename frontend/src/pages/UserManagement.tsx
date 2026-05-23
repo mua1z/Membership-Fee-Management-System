@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import api from '../lib/api'
 import { useTranslation } from 'react-i18next'
+import { formatEthiopianDate } from '../utils/ethiopianCalendar'
 import {
   Users, Plus, Edit2, Trash2, Key, Shield, Building2,
   Search, Loader2, CheckCircle2, AlertCircle, X, Eye, EyeOff, ToggleLeft, ToggleRight
@@ -346,7 +347,7 @@ export default function UserManagement() {
                         : <><ToggleLeft className="w-5 h-5 text-gray-400" /><span className="text-gray-500">{t('common.inactive')}</span></>}
                     </button>
                   </td>
-                  <td className="text-xs text-gray-500">{new Date(u.createdAt).toLocaleDateString()}</td>
+                  <td className="text-xs text-gray-500">{formatEthiopianDate(u.createdAt)}</td>
                   <td>
                     <div className="flex items-center gap-1">
                       <button
