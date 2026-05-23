@@ -35,11 +35,15 @@ coverage/
 .nyc_output/
 
 # Production scripts with hardcoded credentials — never commit
-backend/check_prod.js
-backend/check_prod_state.js
-backend/seed_prod.js
-backend/seed_prod_fix.js
-backend/seed_prod_fix2.js
+backend/check_prod*
+backend/seed_prod*
+
+# Temp / one-off scripts
+backend/rename_units_*.js
+backend/check_sectors*.js
+backend/verify_prod*.js
+backend/fix_missing_*.js
+backend/add_parentid*.js
 
 # Misc
 *.pem
