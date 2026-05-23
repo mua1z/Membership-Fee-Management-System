@@ -297,7 +297,7 @@ export default function Reports() {
                 <ResponsiveContainer width="100%" height={400}>
                   <BarChart data={yearlyData.monthlyBreakdown}>
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="_id" tickFormatter={(m) => t(`common.${['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'][m-1]}`)} />
+                    <XAxis dataKey="_id" tickFormatter={(m) => t(`common.eth_month_${m}`)} />
                     <YAxis />
                     <Tooltip formatter={(value: number) => `ETB ${value.toLocaleString()}`} />
                     <Legend formatter={(v) => t(v)} />

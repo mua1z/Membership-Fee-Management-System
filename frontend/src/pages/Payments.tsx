@@ -8,9 +8,13 @@ import { useAuth } from '../context/AuthContext'
 import {
   Search, Filter, Plus, Download, Upload, ArrowUpDown, ChevronDown,
   Eye, Printer, X, Save, Loader2, FileText, CreditCard, Wallet, Users,
-  Receipt, Calendar, CheckCircle2, AlertTriangle, Ban, Clock, Building2
+  Receipt, Calendar, CheckCircle2, AlertTriangle, Ban, Clock, Building2,
+  ArrowLeft, Check, ChevronLeft, ChevronRight, Trash2, Banknote
 } from 'lucide-react'
 import { getCurrentEthiopianPeriod, formatEthiopianDate } from '../utils/ethiopianCalendar'
+import PaymentModal from '../components/PaymentModal'
+import ReceiptModal from '../components/ReceiptModal'
+import ConfirmDialog from '../components/ConfirmDialog'
 
 interface Payment {
   _id?: string
