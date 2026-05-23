@@ -55,7 +55,7 @@ export default function Reports() {
   const fetchReports = async () => {
     setLoading(true)
     try {
-      const filterParams = {}
+      const filterParams: Record<string, any> = {}
       if (selectedSectorType) filterParams.sectorType = selectedSectorType
       if (selectedSectorId) filterParams.sectorId = selectedSectorId
       if (selectedCategoryId) filterParams.memberCategoryId = selectedCategoryId

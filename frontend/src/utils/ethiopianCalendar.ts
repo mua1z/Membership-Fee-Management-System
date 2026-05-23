@@ -3,20 +3,27 @@
  * Converts Gregorian dates to Ethiopian dates for UI display.
  */
 
-export const ETHIOPIAN_MONTHS_EN: Record<number, string> = {
+export const ETHIOPIAN_MONTHS_EN: { [key: number]: string } = {
   1: "Meskerem", 2: "Tikimt", 3: "Hidar", 4: "Tahsas", 5: "Tir",
   6: "Yekatit", 7: "Megabit", 8: "Miazia", 9: "Ginbot", 10: "Sene",
   11: "Hamle", 12: "Nehasse", 13: "Pagume"
 };
 
-export const ETHIOPIAN_MONTHS_AM: Record<number, string> = {
+export const ETHIOPIAN_MONTHS_AM: { [key: number]: string } = {
   1: "መስከረም", 2: "ጥቅምት", 3: "ህዳር", 4: "ታህሳስ", 5: "ጥር",
   6: "የካቲት", 7: "መጋቢት", 8: "ሚያዝያ", 9: "ግንቦት", 10: "ሰኔ",
   11: "ሐምሌ", 12: "ነሐሴ", 13: "ጳጉሜ"
 };
 
-export const ETHIOPIAN_MONTHS_EN_LIST = Object.values(ETHIOPIAN_MONTHS_EN);
-export const ETHIOPIAN_MONTHS_AM_LIST = Object.values(ETHIOPIAN_MONTHS_AM);
+export const ETHIOPIAN_MONTHS_EN_LIST = [
+  "Meskerem", "Tikimt", "Hidar", "Tahsas", "Tir", "Yekatit",
+  "Megabit", "Miazia", "Ginbot", "Sene", "Hamle", "Nehasse", "Pagume"
+];
+
+export const ETHIOPIAN_MONTHS_AM_LIST = [
+  "መስከረም", "ጥቅምት", "ህዳር", "ታህሳስ", "ጥር", "የካቲት",
+  "መጋቢት", "ሚያዝያ", "ግንቦት", "ሰኔ", "ሐምሌ", "ነሐሴ", "ጳጉሜ"
+];
 
 /**
  * Compute the Julian Day Number for a Gregorian date.
