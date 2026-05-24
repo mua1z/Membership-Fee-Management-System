@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import api from '../lib/api'
-import { Search, Filter, Plus, Upload, Download, Edit2, Trash2, X, Loader2, ChevronLeft, ChevronRight, Users, Wallet, Banknote, ShieldAlert } from 'lucide-react'
+import { Search, Filter, Plus, Upload, Download, Edit2, Trash2, X, Loader2, ChevronLeft, ChevronRight, Users, Wallet, Banknote, ShieldAlert, Receipt } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { useAuth } from '../context/AuthContext'
 import { useTranslation } from 'react-i18next'
@@ -104,7 +104,7 @@ export default function Members() {
   const { t } = useTranslation()
   const [members, setMembers] = useState<Member[]>([])
   const [pagination, setPagination] = useState<Pagination>({ total: 0, page: 1, limit: 15, pages: 0 })
-  const [summary, setSummary] = useState({ totalMembers: 0, totalMonthlyRevenue: 0, totalYearlyRevenue: 0 })
+  const [summary, setSummary] = useState({ totalMembers: 0, totalMonthlyRevenue: 0, totalQuarterlyRevenue: 0, totalYearlyRevenue: 0 })
   const [loading, setLoading] = useState(false)
   const [exporting, setExporting] = useState(false)
   const [search, setSearch] = useState('')
@@ -693,7 +693,7 @@ export default function Members() {
                   setSelectedSectorType(''); setSelectedSectorId(''); setSelectedCategoryId('');
                   setFilters({ cluster:'', branch:'', sector:'', membershipType:'', status:'', paymentStatus:'', billingYear: getCurrentEthiopianPeriod().year, billingMonth: getCurrentEthiopianPeriod().month });
                   setSearch(''); setHasFiltered(false); setMembers([]);
-                  setSummary({ totalMembers:0, totalMonthlyRevenue:0, totalYearlyRevenue:0 });
+                  setSummary({ totalMembers:0, totalMonthlyRevenue:0, totalQuarterlyRevenue:0, totalYearlyRevenue:0 });
                 }}
                 className="btn btn-secondary px-6"
               >
@@ -717,10 +717,11 @@ export default function Members() {
       ) : (
       <>
       {/* Metrics Summary */}
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
         {[
           { label: t('common.total_members'), value: summary.totalMembers.toLocaleString(), icon: Users, color: 'text-blue-600', bg: 'bg-blue-50 dark:bg-blue-900/20' },
           { label: t('common.monthly_revenue'), value: `${Number(summary.totalMonthlyRevenue).toLocaleString()} ETB`, icon: Wallet, color: 'text-emerald-600', bg: 'bg-emerald-50 dark:bg-emerald-900/20' },
+          { label: t('common.quarterly_revenue'), value: `${Number(summary.totalQuarterlyRevenue).toLocaleString()} ETB`, icon: Receipt, color: 'text-amber-600', bg: 'bg-amber-50 dark:bg-amber-900/20' },
           { label: t('common.yearly_revenue'), value: `${Number(summary.totalYearlyRevenue).toLocaleString()} ETB`, icon: Banknote, color: 'text-purple-600', bg: 'bg-purple-50 dark:bg-purple-900/20' }
         ].map(s => (
           <div key={s.label} className="card flex items-center gap-4">

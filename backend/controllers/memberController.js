@@ -251,6 +251,7 @@ exports.getMembers = async (req, res) => {
     });
 
     const totalMonthlyRevenue = await Member.sum('contributionMonthlyFee', { where });
+    const totalQuarterlyRevenue = (totalMonthlyRevenue || 0) * 3;
     const totalYearlyRevenue = await Member.sum('contributionAnnualFee', { where });
 
     res.json({
@@ -259,6 +260,7 @@ exports.getMembers = async (req, res) => {
       summary: {
         totalMembers: total,
         totalMonthlyRevenue: totalMonthlyRevenue || 0,
+        totalQuarterlyRevenue,
         totalYearlyRevenue: totalYearlyRevenue || 0
       },
       pagination: { total, page: Number(page), limit: Number(limit), pages: Math.ceil(total / Number(limit)) }
