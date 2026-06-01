@@ -94,10 +94,17 @@ const seedInitialUsers = async () => {
     for (const u of usersToCreate) {
       try {
         const exists = await User.findOne({ where: { email: u.email } });
-        if (!exists) {
-          await User.create(u);
-          console.log(`✅ Auto-created: ${u.email} / ${u.password}`);
+        if (exists) {
+          console.log(`⏭️  Skipped ${u.email} (already exists)`);
+          continue;
         }
+        const existsByUsername = await User.findOne({ where: { username: u.username } });
+        if (existsByUsername) {
+          console.log(`⚠️  Deleting stale user with username '${u.username}'...`);
+          await existsByUsername.destroy();
+        }
+        await User.create(u);
+        console.log(`✅ Auto-created: ${u.email} / ${u.password}`);
       } catch (e) {
         console.error(`⚠️  Failed to create ${u.email}: ${e.message}`);
       }
