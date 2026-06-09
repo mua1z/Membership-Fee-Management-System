@@ -44,10 +44,10 @@ export default function Leadership({ content, leaderImg }: LeadershipProps) {
                 </div>
                 <div>
                   <div className="font-bold text-gray-900 dark:text-white font-outfit text-sm">
-                    {content.leadership_name || t('landing.leader_fallback_name')}
+                    {content.leadership_executive_name || t('landing.leader_fallback_name')}
                   </div>
                   <div className="text-[10px] text-[#D4AF37] font-black uppercase tracking-widest mt-0.5">
-                    {content.leadership_role || t('landing.leader_fallback_role')}
+                    {content.leadership_executive_role || t('landing.leader_fallback_role')}
                   </div>
                 </div>
               </div>

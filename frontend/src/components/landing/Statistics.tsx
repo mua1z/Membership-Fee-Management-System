@@ -84,7 +84,7 @@ export default function Statistics({ stats, content }: StatisticsProps) {
         <div className="text-center mb-16">
           <span className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.3em] text-[#D4AF37] mb-3">
             <span className="w-6 h-px bg-[#D4AF37]/50"></span>
-            {content.stats_title || t('landing.stats_title')}
+            {content.stats_section_title || t('landing.stats_title')}
             <span className="w-6 h-px bg-[#D4AF37]/50"></span>
           </span>
             <h2 className="text-3xl md:text-5xl font-black tracking-tight font-outfit text-white">

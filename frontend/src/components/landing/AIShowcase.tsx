@@ -44,13 +44,13 @@ export default function AIShowcase({ stats, content }: AIShowcaseProps) {
           >
             <span className="inline-flex items-center gap-2 text-xs font-black text-[#D4AF37] uppercase tracking-[0.3em]">
               <span className="w-6 h-px bg-[#D4AF37]/50"></span>
-              {content.ai_title || 'AI Operations Agent'}
+              {content.ai_section_title || 'AI Operations Agent'}
             </span>
             <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight leading-tight font-outfit">
               AI Administrative System
             </h2>
             <p className="text-sm sm:text-base text-gray-400 leading-relaxed max-w-lg">
-              {content.ai_description || 'Say goodbye to tedious clicking. The built-in AI Operations Agent executes high-level administrative functions directly from conversational natural language. Instantly write queries, create summaries, reset account statuses, or export detailed spreadsheet spreadsheets.'}
+              {content.ai_section_description || 'Say goodbye to tedious clicking. The built-in AI Operations Agent executes high-level administrative functions directly from conversational natural language. Instantly write queries, create summaries, reset account statuses, or export detailed spreadsheet spreadsheets.'}
             </p>
             
             <div className="grid sm:grid-cols-2 gap-3 pt-4">

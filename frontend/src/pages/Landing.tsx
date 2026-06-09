@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
+import api from '../lib/api'
 import Navbar from '../components/landing/Navbar';
 import Hero from '../components/landing/Hero';
 import Statistics from '../components/landing/Statistics';
@@ -73,10 +74,12 @@ export default function Landing() {
   }
 
   // Identify categories for images
-  const heroImages = galleryImages.filter(i => i.category === 'hero');
-  const leadershipImages = galleryImages.filter(i => i.category === 'leadership');
+  const featuredImages = galleryImages.filter((i: any) => i.isFeatured);
+  const heroImages = galleryImages.filter((i: any) => i.category === 'hero');
+  const leadershipImages = galleryImages.filter((i: any) => i.category === 'leadership');
   
-  const heroBg = heroImages.length > 0 ? heroImages[0].image : '/photos/building.jpg';
+  const heroFeatured = featuredImages.length > 0 ? featuredImages[0] : null;
+  const heroBg = heroFeatured ? heroFeatured.image : (heroImages.length > 0 ? heroImages[0].image : '/photos/building.jpg');
   const leaderImg = leadershipImages.length > 0 ? leadershipImages[0].image : '/photos/leadership.jpg';
   const aboutImg = '/photos/gate.jpg';
   const ctaBg = heroBg;
