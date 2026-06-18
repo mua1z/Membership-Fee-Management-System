@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Membership Fee Contribution For Prosperity Party Dire Dawa Branch Office - Full Stack App",
   "scripts": {
-    "build": "npm install --prefix frontend && npm run build --prefix frontend && npm install --prefix backend",
+    "build": "npm install --prefix frontend && npm run build --prefix frontend && cp frontend/public/manifest.json frontend/dist/manifest.json && cp frontend/public/service-worker.js frontend/dist/service-worker.js && cp -r frontend/public/icons frontend/dist/icons && npm install --prefix backend",
     "start": "node backend/server.js",
     "dev:backend": "cd backend && npm run dev",
     "dev:frontend": "cd frontend && npm run dev"
