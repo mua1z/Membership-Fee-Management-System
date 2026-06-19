@@ -441,7 +441,7 @@ export default function SettingsPage() {
               <p className="text-xs text-gray-500 mb-4">{t('common.contribution_rules')}</p>
 
               <div className="mb-3">
-                <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('common.salary_calculation_settings')}</p>
+                <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Employee Young/Women wing members</p>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   {[
                     { key: 'salary_1k_3k',   label: '1,000–3,000 Birr' },
