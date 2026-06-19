@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Calendar, ChevronRight, ImageIcon, ExternalLink, Send } from 'lucide-react';
+import { Calendar, ChevronRight, ImageIcon, ExternalLink, Send, X } from 'lucide-react';
 import FacebookFeed from '../components/FacebookFeed';
 import api from '../lib/api';
 import PageHero from '../components/landing/PageHero';
@@ -35,10 +35,22 @@ export default function NewsPage() {
   const { t, i18n } = useTranslation();
   const [news, setNews] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [expanded, setExpanded] = useState<Set<number>>(new Set());
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+
+  const toggleExpand = (id: number) => {
+    setExpanded(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
   useEffect(() => {
     const fetchNews = async () => {
       try {
-        const res = await api.get('/news/latest?count=4');
+        const res = await api.get('/news/latest?count=20');
         if (res.data.success) setNews(res.data.data);
       } catch (err) {
         console.error('Failed to load news:', err);
@@ -75,21 +87,22 @@ export default function NewsPage() {
                   <p className="text-gray-500 dark:text-gray-400 font-medium">{t('news.no_articles', 'No news articles yet.')}</p>
                 </div>
               ) : (
-                <div className="space-y-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pr-2 overflow-y-auto custom-scrollbar" style={{ maxHeight: '1000px' }}>
                   {news.map((item) => (
-                    <article key={item.id} className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 rounded-3xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300">
-                      <div className="flex flex-col md:flex-row">
+                    <article key={item.id} className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 rounded-3xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col h-full">
+                      <div className="flex flex-col flex-1">
                         {item.image && (
-                          <div className="md:w-72 h-56 md:h-auto flex-shrink-0 overflow-hidden bg-gray-100 dark:bg-slate-800">
+                          <div className="w-full h-48 flex-shrink-0 overflow-hidden bg-gray-100 dark:bg-slate-800">
                             <img
                               src={item.image}
                               alt={item.title}
-                              className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                              className="w-full h-full object-cover transition-transform duration-500 hover:scale-105 cursor-pointer"
+                              onClick={() => item.image && setSelectedImage(item.image)}
                               onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
                             />
                           </div>
                         )}
-                        <div className="flex-1 p-6 md:p-8 flex flex-col justify-between">
+                        <div className="p-6 flex flex-col flex-1 justify-between">
                           <div>
                             <div className="flex items-center gap-3 mb-3">
                               <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-[#0B5D3B]/10 text-[#0B5D3B] dark:bg-[#D4AF37]/10 dark:text-[#D4AF37]">
@@ -100,17 +113,20 @@ export default function NewsPage() {
                                 {new Date(item.createdAt).toLocaleDateString(lang === 'am' ? 'am-ET' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
                               </span>
                             </div>
-                            <h3 className="text-xl md:text-2xl font-black text-gray-900 dark:text-white font-outfit leading-snug mb-3">
+                            <h3 className="text-lg md:text-xl font-black text-gray-900 dark:text-white font-outfit leading-snug mb-3">
                               {item.title}
                             </h3>
-                            <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed line-clamp-3">
+                            <p className={`text-sm text-black dark:text-white font-bold leading-relaxed ${expanded.has(item.id) ? 'whitespace-pre-wrap' : 'line-clamp-3'}`}>
                               {item.content}
                             </p>
                           </div>
-                          <div className="mt-5">
-                            <button className="inline-flex items-center gap-1.5 text-sm font-bold text-[#0B5D3B] dark:text-[#D4AF37] hover:underline group">
-                              {t('common.read_more', 'Read More')}
-                              <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                          <div className="mt-5 pt-4 border-t border-gray-100 dark:border-slate-800/50">
+                            <button 
+                              onClick={() => toggleExpand(item.id)}
+                              className="inline-flex items-center gap-1.5 text-sm font-bold text-[#0B5D3B] dark:text-[#D4AF37] hover:underline group"
+                            >
+                              {expanded.has(item.id) ? t('common.show_less', 'Show Less') : t('common.read_more', 'Read More')}
+                              <ChevronRight className={`w-4 h-4 transition-transform ${expanded.has(item.id) ? '-rotate-90' : 'group-hover:translate-x-0.5'}`} />
                             </button>
                           </div>
                         </div>
@@ -120,16 +136,14 @@ export default function NewsPage() {
                 </div>
               )}
 
-              {/* Facebook Feed – displays page posts automatically */}
-              <div className="mt-12">
-                <FacebookFeed />
-              </div>
-
             </div>
 
             {/* ── Right Column (30%) – Social Media Sidebar ── */}
             <div className="w-full lg:w-[30%] space-y-6">
               <div className="sticky top-24 space-y-6">
+
+                {/* Facebook Feed – displays page posts automatically */}
+                <FacebookFeed />
 
                 {/* YouTube Embed via SociableKit */}
                 <div className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 rounded-3xl overflow-hidden shadow-sm">
@@ -205,6 +219,27 @@ export default function NewsPage() {
           </div>
         </div>
       </section>
+
+      {/* Image Modal */}
+      {selectedImage && (
+        <div 
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+          onClick={() => setSelectedImage(null)}
+        >
+          <button 
+            className="absolute top-6 right-6 p-2 bg-white/10 hover:bg-white/20 text-white rounded-full transition-colors"
+            onClick={() => setSelectedImage(null)}
+          >
+            <X className="w-6 h-6" />
+          </button>
+          <img 
+            src={selectedImage} 
+            alt="Full size" 
+            className="max-w-full max-h-[90vh] object-contain rounded-xl shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
+      )}
     </div>
   );
 }

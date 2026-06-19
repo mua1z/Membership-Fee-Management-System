@@ -15,9 +15,11 @@ interface GalleryImage {
 
 interface GalleryProps {
   galleryImages: GalleryImage[];
+  hideTitle?: boolean;
+  compact?: boolean;
 }
 
-export default function Gallery({ galleryImages }: GalleryProps) {
+export default function Gallery({ galleryImages, hideTitle = false, compact = false }: GalleryProps) {
   const { t } = useTranslation();
   const [filter, setFilter] = useState('all');
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
@@ -111,17 +113,19 @@ export default function Gallery({ galleryImages }: GalleryProps) {
   }, [lightboxIndex, filteredImages]);
 
   return (
-    <section id="gallery" className="py-28 lg:py-36 bg-white dark:bg-slate-950 relative [perspective:1200px]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="gallery" className={`${compact ? 'py-8' : 'py-28 lg:py-36'} bg-white dark:bg-slate-950 relative [perspective:1200px]`}>
+      <div className={`${compact ? 'w-full px-4 sm:px-6' : 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'}`}>
         
-        <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-5xl font-black tracking-tight font-outfit text-gray-900 dark:text-white">
-              Our Gallery
-            </h2>
-        </div>
+        {!hideTitle && (
+          <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-5xl font-black tracking-tight font-outfit text-gray-900 dark:text-white">
+                Our Gallery
+              </h2>
+          </div>
+        )}
 
         {/* Filter Bar */}
-        <div className="flex flex-wrap justify-center gap-2 mb-12">
+        <div className={`flex flex-wrap ${compact ? 'justify-start' : 'justify-center'} gap-2 mb-12`}>
           {categories.map(cat => (
             <button
               key={cat}
@@ -182,14 +186,16 @@ export default function Gallery({ galleryImages }: GalleryProps) {
           })}
         </div>
 
-        <div className="flex justify-center mt-16">
-          <Link
-            to="/gallery"
-            className="inline-flex items-center gap-2 px-8 py-4 bg-[#0B5D3B] hover:bg-[#094a2f] text-white font-black rounded-xl transition-all duration-300 text-xs uppercase tracking-wider shadow-lg shadow-[#0B5D3B]/10 hover:shadow-xl"
-          >
-            {t('buttons.see_more')} <ArrowRight className="w-4 h-4" />
-          </Link>
-        </div>
+        {!compact && (
+          <div className="flex justify-center mt-16">
+            <Link
+              to="/gallery"
+              className="inline-flex items-center gap-2 px-8 py-4 bg-[#0B5D3B] hover:bg-[#094a2f] text-white font-black rounded-xl transition-all duration-300 text-xs uppercase tracking-wider shadow-lg shadow-[#0B5D3B]/10 hover:shadow-xl"
+            >
+              {t('buttons.see_more')} <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+        )}
       </div>
 
       {/* Lightbox Modal */}

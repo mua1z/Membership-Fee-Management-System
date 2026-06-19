@@ -19,6 +19,7 @@ import ConfirmDialog from '../components/ConfirmDialog'
 import DeleteAllConfirmDialog from '../components/DeleteAllConfirmDialog'
 import SectorPaymentModal from '../components/SectorPaymentModal'
 import SectorPaymentAuditLogsModal from '../components/SectorPaymentAuditLogsModal'
+import { useToast } from '../components/Toast'
 
 interface Payment {
   _id?: string
@@ -58,6 +59,7 @@ export default function Payments() {
   const navigate = useNavigate()
   const { user } = useAuth()
   const { t } = useTranslation()
+  const toast = useToast()
   const [activeTab, setActiveTab] = useState<'monthly' | 'history' | 'sector'>('monthly')
 
   const ethPeriod = getCurrentEthiopianPeriod()
@@ -250,23 +252,27 @@ export default function Payments() {
   }
 
   const handleApproveSectorPayment = async (id: number) => {
+    const toastId = toast.loading('Approving Payment...', 'Verifying and approving the sector deposit.')
     try {
       await api.put(`/sector-payments/${id}/approve`)
+      toast.update(toastId, 'success', 'Payment Approved', 'The sector deposit has been successfully approved and recorded.')
       await fetchSectorPayments()
       notifyDashboardRefresh()
     } catch (err: any) {
-      alert(err.response?.data?.message || 'Error approving payment')
+      toast.update(toastId, 'error', 'Approval Failed', err.response?.data?.message || 'Could not approve the payment. Please try again.')
     }
   }
 
   const handleRejectSectorPayment = async (id: number) => {
     const reason = prompt('Please enter a reason for rejection (optional):')
+    const toastId = toast.loading('Rejecting Payment...', 'Processing the rejection request.')
     try {
       await api.put(`/sector-payments/${id}/reject`, { reason })
+      toast.update(toastId, 'success', 'Payment Rejected', 'The sector deposit has been marked as rejected.')
       await fetchSectorPayments()
       notifyDashboardRefresh()
     } catch (err: any) {
-      alert(err.response?.data?.message || 'Error rejecting payment')
+      toast.update(toastId, 'error', 'Rejection Failed', err.response?.data?.message || 'Could not reject the payment.')
     }
   }
 
@@ -431,11 +437,11 @@ export default function Payments() {
   const handleSavePayment = async (member: MemberPaymentStatus) => {
     if (member.paymentStatus === 'Paid') return
     if (!checkedIds[member._id]) {
-      alert("Please check the 'Paid' box before saving.")
+      toast.warning('Payment Not Checked', `Please mark ${member.fullName}'s payment as paid before saving.`)
       return
     }
-    
     setSavingId(member._id)
+    const toastId = toast.loading('Recording Payment...', `Saving payment for ${member.fullName}.`)
     try {
       const year = selectedYearNum;
       const month = selectedMonthNum;
@@ -446,16 +452,16 @@ export default function Payments() {
         paymentDate: new Date().toISOString(),
         periodMonth: Number(month),
         periodYear: Number(year),
-        receivedBy: user?.role === 'sector_officer' ? 'Sector Officer' : 'Admin', 
+        receivedBy: user?.role === 'sector_officer' ? 'Sector Officer' : 'Admin',
         status: 'Paid'
       })
+      toast.update(toastId, 'success', 'Payment Recorded', `${member.fullName}'s payment of ${member.fee.toLocaleString()} ETB has been successfully recorded.`)
       await fetchMonthlyStatus()
       if (res.data.data?.receiptId) {
         setSelectedReceiptId(res.data.data.receiptId)
       }
     } catch(err: any) {
-      console.error(err)
-      alert(err.response?.data?.message || 'Error recording payment')
+      toast.update(toastId, 'error', 'Payment Failed', err.response?.data?.message || 'Could not record the payment. Please try again.')
     } finally {
       setSavingId(null)
     }
@@ -471,6 +477,7 @@ export default function Payments() {
     setConfirmSaveSelected(false)
     const selectedMembers = members.filter(m => checkedIds[m._id] && m.paymentStatus === 'Unpaid')
     setLoading(true)
+    const toastId = toast.loading(`Recording ${selectedMembers.length} Payments...`, 'Processing bulk payment recording.')
     try {
       const payload = selectedMembers.map(member => ({
         member: member.memberId,
@@ -483,9 +490,10 @@ export default function Payments() {
         status: 'Paid'
       }))
       await api.post('/payments/bulk', payload)
+      toast.update(toastId, 'success', `${selectedMembers.length} Payments Recorded`, `Successfully recorded payments for ${selectedMembers.length} members.`)
       await fetchMonthlyStatus()
     } catch (err: any) {
-      console.error(err)
+      toast.update(toastId, 'error', 'Bulk Payment Failed', err.response?.data?.message || 'Could not record bulk payments. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -523,6 +531,7 @@ export default function Payments() {
   const doPayAll = async () => {
     setConfirmPayAll(false)
     setLoading(true)
+    const toastId = toast.loading(`Paying All ${pendingPayAllMembers.length} Members...`, 'Processing full bulk payment for all unpaid members.')
     try {
       const payload = pendingPayAllMembers.map(member => ({
         member: member.memberId,
@@ -535,9 +544,10 @@ export default function Payments() {
         status: 'Paid'
       }))
       await api.post('/payments/bulk', payload)
+      toast.update(toastId, 'success', `All Payments Recorded`, `Successfully recorded payments for all ${pendingPayAllMembers.length} unpaid members.`)
       await fetchMonthlyStatus()
     } catch (err: any) {
-      console.error(err)
+      toast.update(toastId, 'error', 'Bulk Payment Failed', err.response?.data?.message || 'Could not process all payments.')
     } finally {
       setLoading(false)
     }
@@ -580,11 +590,11 @@ export default function Payments() {
       <td className="font-mono text-xs">{payment.receiptId}</td>
       <td>
         <div>
-          <p className="font-medium">{payment.member?.fullName || payment.memberId}</p>
+          <p className="font-bold">{payment.member?.fullName || payment.memberId}</p>
           <p className="text-xs text-gray-500 dark:text-gray-400">{payment.member?.branch}</p>
         </div>
       </td>
-      <td className="font-semibold">{payment.amount.toLocaleString()}</td>
+      <td className="font-bold">{payment.amount.toLocaleString()}</td>
       <td>{payment.currency}</td>
       <td>{getMethodBadge(payment.method)}</td>
       <td>{payment.paymentDate ? formatEthiopianDate(payment.paymentDate) : '-'}</td>
@@ -723,7 +733,7 @@ export default function Payments() {
         <nav className="flex space-x-4">
           <button
             onClick={() => setActiveTab('monthly')}
-            className={`pb-4 px-1 text-sm font-medium border-b-2 transition-colors ${
+            className={`pb-4 px-1 text-sm font-bold border-b-2 transition-colors ${
               activeTab === 'monthly'
                 ? 'border-primary text-primary'
                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
@@ -733,7 +743,7 @@ export default function Payments() {
           </button>
           <button
             onClick={() => setActiveTab('history')}
-            className={`pb-4 px-1 text-sm font-medium border-b-2 transition-colors ${
+            className={`pb-4 px-1 text-sm font-bold border-b-2 transition-colors ${
               activeTab === 'history'
                 ? 'border-primary text-primary'
                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
@@ -743,7 +753,7 @@ export default function Payments() {
           </button>
           <button
             onClick={() => setActiveTab('sector')}
-            className={`pb-4 px-1 text-sm font-medium border-b-2 transition-colors ${
+            className={`pb-4 px-1 text-sm font-bold border-b-2 transition-colors ${
               activeTab === 'sector'
                 ? 'border-primary text-primary'
                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
@@ -781,14 +791,14 @@ export default function Payments() {
           </button>
           
           <div className="h-6 w-px bg-gray-200 dark:bg-gray-700 mx-1 hidden sm:block"></div>
-          <label className="font-medium whitespace-nowrap text-xs text-gray-500 uppercase tracking-wider hidden md:block">{t('common.billing_period')}:</label>
+          <label className="font-bold whitespace-nowrap text-xs text-gray-500 uppercase tracking-wider hidden md:block">{t('common.billing_period')}:</label>
           <div className="flex items-center gap-1 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg p-1">
-            <select value={selectedMonthNum} onChange={(e) => setSelectedMonthNum(Number(e.target.value))} className="bg-transparent border-none text-sm font-semibold focus:ring-0 cursor-pointer">
+            <select value={selectedMonthNum} onChange={(e) => setSelectedMonthNum(Number(e.target.value))} className="bg-transparent border-none text-sm font-bold focus:ring-0 cursor-pointer">
               {Array.from({ length: 13 }, (_, i) => i + 1).map((m) => (
                 <option key={m} value={m}>{t(`common.eth_month_${m}`)}</option>
               ))}
             </select>
-            <select value={selectedYearNum} onChange={(e) => setSelectedYearNum(Number(e.target.value))} className="bg-transparent border-none text-sm font-semibold focus:ring-0 cursor-pointer">
+            <select value={selectedYearNum} onChange={(e) => setSelectedYearNum(Number(e.target.value))} className="bg-transparent border-none text-sm font-bold focus:ring-0 cursor-pointer">
               {Array.from({ length: 11 }, (_, i) => currentYear - 5 + i).map(y => (
                 <option key={y} value={y}>{y}</option>
               ))}
@@ -909,7 +919,7 @@ export default function Payments() {
           <div className="mx-auto w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mb-4">
             <Filter className="w-8 h-8 text-gray-400" />
           </div>
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">{t('common.filter')}...</h3>
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">{t('common.filter')}...</h3>
           <p className="text-gray-500 max-w-sm mx-auto">
             Please choose your desired filters above and click '{t('common.display_payments')}' to fetch the records from the database.
           </p>
@@ -1009,9 +1019,9 @@ export default function Payments() {
                     <tr key={member._id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                       <td className="text-xs text-gray-400">{((monthlyPage - 1) * monthlyLimit) + idx + 1}</td>
                       <td className="text-xs font-mono">{member.memberId}</td>
-                      <td className="text-sm font-medium">{member.fullName}</td>
+                      <td className="text-sm font-bold">{member.fullName}</td>
                       <td className="text-xs">{member.branch}</td>
-                      <td className="text-sm font-semibold">ETB {Number(member.fee).toLocaleString()}</td>
+                      <td className="text-sm font-bold">ETB {Number(member.fee).toLocaleString()}</td>
                       <td>
                         <span className={`badge ${member.paymentStatus === 'Paid' ? 'badge-success' : 'badge-error'}`}>
                           {member.paymentStatus === 'Paid' ? t('common.paid') : t('common.unpaid')}
@@ -1042,7 +1052,7 @@ export default function Payments() {
                             </button>
                           </div>
                         ) : (
-                          <span className="text-xs text-emerald-600 font-medium">
+                          <span className="text-xs text-emerald-600 font-bold">
                             <CheckCircle2 className="w-4 h-4 inline mr-1" />
                             {t('common.recorded') || 'Recorded'}
                           </span>
@@ -1276,11 +1286,11 @@ export default function Payments() {
                 ) : (
                   sectorPayments.map((sp) => (
                     <tr key={sp._id || sp.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                      <td className="font-medium text-xs font-sans">
+                      <td className="font-bold text-xs font-sans">
                         {t(`common.eth_month_${sp.billingMonth}`)} {sp.billingYear}
                       </td>
                       <td className="text-xs font-sans">{sp.sectorUnit?.name || sp.sectorUnitId}</td>
-                      <td className="font-semibold text-sm">{Number(sp.totalAmount).toLocaleString()}</td>
+                      <td className="font-bold text-sm">{Number(sp.totalAmount).toLocaleString()}</td>
                       <td className="text-xs font-mono">{sp.transactionRef}</td>
                       <td>
                         <span className={`badge ${
@@ -1309,7 +1319,7 @@ export default function Payments() {
                             href={`/uploads/receipts/${sp.receiptFile}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-primary hover:text-primary/80 text-xs font-medium flex items-center gap-1 font-sans"
+                            className="text-primary hover:text-primary/80 text-xs font-bold flex items-center gap-1 font-sans"
                             title={t('common.view_receipt')}
                           >
                             <FileText className="w-3.5 h-3.5" />

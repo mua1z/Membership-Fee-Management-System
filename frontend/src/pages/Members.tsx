@@ -10,6 +10,7 @@ import FastEntryModal from '../components/FastEntryModal'
 import ConfirmDialog from '../components/ConfirmDialog'
 import DeleteAllConfirmDialog from '../components/DeleteAllConfirmDialog'
 import { getCurrentEthiopianPeriod } from '../utils/ethiopianCalendar'
+import { useToast } from '../components/Toast'
 
 interface Member {
   _id: string
@@ -103,6 +104,7 @@ const SECTOR_TYPE_DISPLAY: Record<string, string> = {
 export default function Members() {
   const { user } = useAuth()
   const { t } = useTranslation()
+  const toast = useToast()
   const [members, setMembers] = useState<Member[]>([])
   const [pagination, setPagination] = useState<Pagination>({ total: 0, page: 1, limit: 15, pages: 0 })
   const [summary, setSummary] = useState({ totalMembers: 0, totalMonthlyRevenue: 0, totalQuarterlyRevenue: 0, totalYearlyRevenue: 0 })
@@ -265,11 +267,13 @@ export default function Members() {
     const id = confirmDelete.id
     setConfirmDelete({ open: false, id: null })
     if (!id) return
+    const toastId = toast.loading('Deleting Member...', 'Please wait while the record is being removed.')
     try {
       await api.delete(`/members/${id}`)
+      toast.update(toastId, 'success', 'Member Deleted', 'The member record has been permanently removed from the system.')
       fetchMembers()
     } catch (error: any) {
-      console.error(error)
+      toast.update(toastId, 'error', 'Delete Failed', error?.response?.data?.message || 'An unexpected error occurred while deleting the member.')
     }
   }
 
@@ -297,12 +301,15 @@ export default function Members() {
   const doBulkDelete = async () => {
     setConfirmBulkDelete(false)
     setDeletingBulk(true)
+    const count = selectedIds.length
+    const toastId = toast.loading(`Deleting ${count} Members...`, 'Processing bulk deletion. This may take a moment.')
     try {
       await api.delete('/members/bulk-delete', { data: { ids: selectedIds } })
+      toast.update(toastId, 'success', `${count} Members Deleted`, `Successfully removed ${count} member records from the system.`)
       setSelectedIds([])
       fetchMembers()
     } catch (error: any) {
-      console.error(error)
+      toast.update(toastId, 'error', 'Bulk Delete Failed', error?.response?.data?.message || 'Could not complete bulk deletion. Please try again.')
     } finally {
       setDeletingBulk(false)
     }
@@ -315,12 +322,14 @@ export default function Members() {
   const doClearAll = async () => {
     setConfirmClearAll(false)
     setDeletingAll(true)
+    const toastId = toast.loading('Clearing All Members...', 'This will permanently remove all member records and associated data.')
     try {
       await api.delete('/members/delete-all')
+      toast.update(toastId, 'success', 'All Records Cleared', 'The entire member database has been successfully cleared.')
       setSelectedIds([])
       fetchMembers()
     } catch (error: any) {
-      console.error(error)
+      toast.update(toastId, 'error', 'Clear Failed', error?.response?.data?.message || 'Failed to clear all records. Please try again.')
     } finally {
       setDeletingAll(false)
     }
@@ -480,8 +489,10 @@ export default function Members() {
         filters.status, filters.paymentStatus
       ].filter(Boolean).join('_') || 'All'
       XLSX.writeFile(wb, `Members-${filterTag}-${new Date().toISOString().split('T')[0]}.xlsx`)
+      toast.success('Export Complete', `Successfully exported ${exportedMembers.length} member records to Excel.`)
     } catch (err) {
       console.error(err)
+      toast.error('Export Failed', 'Could not generate the Excel file. Please try again.')
     } finally {
       setExporting(false)
     }
@@ -710,7 +721,7 @@ export default function Members() {
           <div className="mx-auto w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mb-4">
             <Filter className="w-8 h-8 text-gray-400" />
           </div>
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">{t('common.select_filters_to_load')}</h3>
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">{t('common.select_filters_to_load')}</h3>
           <p className="text-gray-500 max-w-sm mx-auto">
             {t('common.select_filters_instruction')}
           </p>
@@ -837,7 +848,7 @@ export default function Members() {
                         className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary"
                       />
                     </td>
-                    <td className="font-semibold">{member.fullName}</td>
+                    <td className="font-bold">{member.fullName}</td>
                     <td>{member.gender === 'Male' ? t('common.male') : member.gender === 'Female' ? t('common.female') : member.gender}</td>
                     <td>{member.branch ? t(`common.${member.branch}`, { defaultValue: member.branch }) : (member.sectorUnit?.name ? t(`common.${member.sectorUnit.name}`, { defaultValue: member.sectorUnit.name }) : '-')}</td>
                     <td><span className="text-[10px] font-bold bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full uppercase tracking-tighter">{member.sector ? t(`common.${member.sector}`, { defaultValue: member.sector }) : (member.memberCategory?.name ? t(`common.${member.memberCategory.name}`, { defaultValue: member.memberCategory.name }) : t(`common.${member.membershipType}`, { defaultValue: member.membershipType }))}</span></td>
@@ -845,7 +856,7 @@ export default function Members() {
                       <td>{member.membershipType === 'Salary-Based' ? member.financial.salary.toLocaleString() : '-'}</td>
                       <td className="text-orange-600">{member.membershipType === 'Salary-Based' ? (member.netSalary?.pensionDeduction?.toLocaleString() || 0) : '-'}</td>
                       <td className="text-red-600">{member.membershipType === 'Salary-Based' ? (member.netSalary?.taxDeduction?.toLocaleString() || 0) : '-'}</td>
-                      <td className="text-green-600 font-semibold">{member.membershipType === 'Salary-Based' ? (member.netSalary?.netSalary?.toLocaleString() || 0) : '-'}</td>
+                      <td className="text-green-600 font-bold">{member.membershipType === 'Salary-Based' ? (member.netSalary?.netSalary?.toLocaleString() || 0) : '-'}</td>
                       <td>{member.membershipType === 'Salary-Based' ? `${member.contribution.percentage}%` : '-'}</td>
                     </>}
                     {members.some(m => m.membershipType === 'Business') && 
@@ -854,7 +865,7 @@ export default function Members() {
                     {members.some(m => m.membershipType === 'Investor') && 
                       <td>{member.membershipType === 'Investor' ? (member.financial.capital?.toLocaleString() || 0) : '-'}</td>
                     }
-                    <td className="font-semibold">{member.contribution.monthlyFee.toLocaleString()}</td>
+                    <td className="font-bold">{member.contribution.monthlyFee.toLocaleString()}</td>
                     <td>{getPaymentBadge(member.paymentStatus)}</td>
                     <td>
                       <div className="flex items-center gap-2">

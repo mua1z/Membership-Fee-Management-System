@@ -134,7 +134,7 @@ export default function SettingsPage() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+              className={`flex items-center gap-2 py-4 px-1 border-b-2 font-bold text-sm transition-colors ${
                 activeTab === tab.id
                   ? 'border-primary-500 text-primary-600 dark:text-primary-400'
                   : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
@@ -156,10 +156,10 @@ export default function SettingsPage() {
 
             {/* Salary Calculation Settings */}
             <div className="p-4 bg-primary-50 dark:bg-primary-900/10 border border-primary-200 dark:border-primary-800 rounded-lg">
-              <h3 className="text-lg font-semibold mb-4">{t('common.salary_calculation_settings')}</h3>
+              <h3 className="text-lg font-bold mb-4">{t('common.salary_calculation_settings')}</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium mb-1">{t('common.fee_calculation_base')}</label>
+                  <label className="block text-sm font-bold mb-1">{t('common.fee_calculation_base')}</label>
                   <select
                     value={settings.contributionRules.salaryBased.calculationBase || 'Net'}
                     onChange={(e) => setSettings({
@@ -176,7 +176,7 @@ export default function SettingsPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">{t('common.pension_deduction')}</label>
+                  <label className="block text-sm font-bold mb-1">{t('common.pension_deduction')}</label>
                   <input
                     type="number"
                     value={settings.contributionRules.salaryBased.pensionPercentage || 7}
@@ -196,7 +196,7 @@ export default function SettingsPage() {
             {/* Tax Brackets */}
             <div>
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold">{t('common.tax_brackets')}</h3>
+                <h3 className="text-lg font-bold">{t('common.tax_brackets')}</h3>
               </div>
               <div className="overflow-x-auto">
                 <table className="table">
@@ -212,7 +212,7 @@ export default function SettingsPage() {
                       <tr key={index}>
                         <td>
                           {bracket.threshold > 999999 ? (
-                            <span className="font-medium">
+                            <span className="font-bold">
                               Over {settings.contributionRules.salaryBased.taxBrackets[index - 1]?.threshold}
                             </span>
                           ) : (
@@ -267,7 +267,7 @@ export default function SettingsPage() {
 
             {/* Salary-Based - Government */}
             <div>
-              <h3 className="text-lg font-semibold mb-4">{t('common.salary_calculation_settings')}</h3>
+              <h3 className="text-lg font-bold mb-4">{t('common.salary_calculation_settings')}</h3>
               <div className="overflow-x-auto">
                 <table className="table">
                   <thead className="table-header">
@@ -295,7 +295,7 @@ export default function SettingsPage() {
                         </td>
                         <td>
                           {rule.maxSalary > 999999 ? (
-                            <span className="font-medium text-gray-500 ml-2">Over {rule.minSalary}</span>
+                            <span className="font-bold text-gray-500 ml-2">Over {rule.minSalary}</span>
                           ) : (
                             <input
                               type="number"
@@ -331,11 +331,11 @@ export default function SettingsPage() {
 
             {/* Fixed Fees */}
             <div>
-              <h3 className="text-lg font-semibold mb-4">{t('common.fixed_fees')}</h3>
+              <h3 className="text-lg font-bold mb-4">{t('common.fixed_fees')}</h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {Object.entries(settings.contributionRules.fixedFees).map(([key, value]) => (
                   <div key={key}>
-                    <label className="block text-sm font-medium mb-1 capitalize">{t(`common.${key.toLowerCase()}`)}</label>
+                    <label className="block text-sm font-bold mb-1 capitalize">{t(`common.${key.toLowerCase()}`)}</label>
                     <input
                       type="number"
                       value={value as number}
@@ -355,11 +355,11 @@ export default function SettingsPage() {
 
             {/* Business Fees */}
             <div>
-              <h3 className="text-lg font-semibold mb-4">{t('common.business_fees')}</h3>
+              <h3 className="text-lg font-bold mb-4">{t('common.business_fees')}</h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {Object.entries(settings.contributionRules.business).map(([key, value]) => (
                   <div key={key}>
-                    <label className="block text-sm font-medium mb-1 capitalize">{t(`common.${key.toLowerCase()}`)}</label>
+                    <label className="block text-sm font-bold mb-1 capitalize">{t(`common.${key.toLowerCase()}`)}</label>
                     <input
                       type="number"
                       value={value as number}
@@ -379,7 +379,7 @@ export default function SettingsPage() {
 
             {/* Investor Tiers */}
             <div>
-              <h3 className="text-lg font-semibold mb-4">{t('common.investor_tiers')}</h3>
+              <h3 className="text-lg font-bold mb-4">{t('common.investor_tiers')}</h3>
               <div className="overflow-x-auto">
                 <table className="table">
                   <thead className="table-header">
@@ -437,11 +437,11 @@ export default function SettingsPage() {
 
             {/* Wing Fees - Art. 7 & 8 */}
             <div>
-              <h3 className="text-lg font-semibold mb-1">{t('common.fixed_fees')}</h3>
+              <h3 className="text-lg font-bold mb-1">{t('common.fixed_fees')}</h3>
               <p className="text-xs text-gray-500 mb-4">{t('common.contribution_rules')}</p>
 
               <div className="mb-3">
-                <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Employee Young/Women wing members</p>
+                <p className="text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Employee Young/Women wing members</p>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   {[
                     { key: 'salary_1k_3k',   label: '1,000–3,000 Birr' },
@@ -450,7 +450,7 @@ export default function SettingsPage() {
                     { key: 'salary_10k_plus',label: '>10,000 Birr' },
                   ].map(({ key, label }) => (
                     <div key={key}>
-                      <label className="block text-xs font-medium mb-1">{label}</label>
+                      <label className="block text-xs font-bold mb-1">{label}</label>
                       <input
                         type="number"
                         value={settings.contributionRules.wing[key] ?? ''}
@@ -469,14 +469,14 @@ export default function SettingsPage() {
               </div>
 
               <div className="mb-3">
-                <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Resident Young/women wing members</p>
+                <p className="text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Resident Young/women wing members</p>
                 <div className="grid grid-cols-2 gap-3">
                   {[
                     { key: 'farmer',   label: 'Art.8a Farmer/Pastoral (Birr/month)' },
                     { key: 'informal', label: 'Art.8b Informal (Birr/month)' },
                   ].map(({ key, label }) => (
                     <div key={key}>
-                      <label className="block text-xs font-medium mb-1">{label}</label>
+                      <label className="block text-xs font-bold mb-1">{label}</label>
                       <input
                         type="number"
                         value={settings.contributionRules.wing[key] ?? ''}
@@ -495,14 +495,14 @@ export default function SettingsPage() {
               </div>
 
               <div>
-                <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Enterprise micro/small/medium/general Young/women wings members</p>
+                <p className="text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Enterprise micro/small/medium/general Young/women wings members</p>
                 <div className="grid grid-cols-2 gap-3">
                   {[
                     { key: 'micro_small',    label: 'Art.8c Micro/Small (Birr/month)' },
                     { key: 'general_annual', label: 'Art.8d General (Birr/year)' },
                   ].map(({ key, label }) => (
                     <div key={key}>
-                      <label className="block text-xs font-medium mb-1">{label}</label>
+                      <label className="block text-xs font-bold mb-1">{label}</label>
                       <input
                         type="number"
                         value={settings.contributionRules.wing[key] ?? ''}
@@ -523,10 +523,10 @@ export default function SettingsPage() {
 
             {/* Distribution */}
             <div>
-              <h3 className="text-lg font-semibold mb-4">{t('common.revenue_distribution')}</h3>
+              <h3 className="text-lg font-bold mb-4">{t('common.revenue_distribution')}</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium mb-1">{t('common.hq_percentage')}</label>
+                  <label className="block text-sm font-bold mb-1">{t('common.hq_percentage')}</label>
                   <input
                     type="number"
                     step="0.1"
@@ -539,7 +539,7 @@ export default function SettingsPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">{t('common.sector_unit_percentage')}</label>
+                  <label className="block text-sm font-bold mb-1">{t('common.sector_unit_percentage')}</label>
                   <input
                     type="number"
                     step="0.1"
@@ -563,7 +563,7 @@ export default function SettingsPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium mb-1">{t('common.org_name')}</label>
+                <label className="block text-sm font-bold mb-1">{t('common.org_name')}</label>
                 <input
                   type="text"
                   value={settings.system.organizationName}
@@ -572,7 +572,7 @@ export default function SettingsPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">{t('common.default_currency')}</label>
+                <label className="block text-sm font-bold mb-1">{t('common.default_currency')}</label>
                 <select
                   value={settings.system.currency}
                   onChange={(e) => setSettings({ ...settings, system: { ...settings.system, currency: e.target.value } })}
@@ -583,7 +583,7 @@ export default function SettingsPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">{t('common.fiscal_year_start')}</label>
+                <label className="block text-sm font-bold mb-1">{t('common.fiscal_year_start')}</label>
                 <select
                   value={settings.system.fiscalYearStart}
                   onChange={(e) => setSettings({ ...settings, system: { ...settings.system, fiscalYearStart: Number(e.target.value) } })}
@@ -597,7 +597,7 @@ export default function SettingsPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">{t('common.defaulter_threshold')}</label>
+                <label className="block text-sm font-bold mb-1">{t('common.defaulter_threshold')}</label>
                 <input
                   type="number"
                   value={settings.system.defaulterThreshold}
@@ -606,7 +606,7 @@ export default function SettingsPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">{t('common.receipt_prefix')}</label>
+                <label className="block text-sm font-bold mb-1">{t('common.receipt_prefix')}</label>
                 <input
                   type="text"
                   value={settings.system.receiptPrefix}
@@ -615,7 +615,7 @@ export default function SettingsPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">{t('common.default_language')}</label>
+                <label className="block text-sm font-bold mb-1">{t('common.default_language')}</label>
                 <select
                   value={settings.system.defaultLanguage}
                   onChange={(e) => setSettings({ ...settings, system: { ...settings.system, defaultLanguage: e.target.value } })}
@@ -630,7 +630,7 @@ export default function SettingsPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-gray-200 dark:border-gray-700">
               <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                 <div>
-                  <p className="font-medium">{t('common.sms_notifications')}</p>
+                  <p className="font-bold">{t('common.sms_notifications')}</p>
                   <p className="text-sm text-gray-500 dark:text-gray-400">{t('common.sms_notifications')}</p>
                 </div>
                 <label className="relative inline-flex items-center cursor-pointer">
@@ -645,7 +645,7 @@ export default function SettingsPage() {
               </div>
               <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                 <div>
-                  <p className="font-medium">{t('common.email_notifications')}</p>
+                  <p className="font-bold">{t('common.email_notifications')}</p>
                   <p className="text-sm text-gray-500 dark:text-gray-400">{t('common.email_notifications')}</p>
                 </div>
                 <label className="relative inline-flex items-center cursor-pointer">
@@ -678,7 +678,7 @@ export default function SettingsPage() {
                   <RotateCcw className="w-5 h-5 text-primary-600 dark:text-primary-400" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">{t('common.recalculate_all')}</h3>
+                  <h3 className="text-base font-bold text-gray-900 dark:text-gray-100">{t('common.recalculate_all')}</h3>
                   <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 leading-relaxed">
                     {t('common.recalculate_warning_text')}
                   </p>

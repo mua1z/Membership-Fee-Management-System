@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import api from '../lib/api'
 import { useTranslation } from 'react-i18next'
 import { X, Upload, Download } from 'lucide-react'
+import { useToast } from './Toast'
 
 interface ImportModalProps {
   onClose: () => void
@@ -12,6 +13,7 @@ interface ImportModalProps {
 
 export default function ImportModal({ onClose, onSuccess, userRole, userSectorUnitId }: ImportModalProps) {
   const { t } = useTranslation()
+  const toast = useToast()
   const [file, setFile] = useState<File | null>(null)
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<any>(null)
@@ -59,11 +61,13 @@ export default function ImportModal({ onClose, onSuccess, userRole, userSectorUn
   const handleUpload = async () => {
     if (!file) {
       setError(t('common.please_select_file'))
+      toast.warning('No File Selected', 'Please select an Excel or CSV file before importing.')
       return
     }
 
     setLoading(true)
     setError('')
+    const toastId = toast.loading('Importing Members...', `Processing ${file.name}. This may take a moment for large files.`)
 
     const formData = new FormData()
     formData.append('file', file)
@@ -76,11 +80,24 @@ export default function ImportModal({ onClose, onSuccess, userRole, userSectorUn
         timeout: 120000,
       })
       setResult(res.data.data)
-      if (res.data.data.success > 0) {
+      const { success, errors, duplicates } = res.data.data
+      if (success > 0) {
+        const skipped = (errors?.length || 0) + (duplicates?.length || 0)
+        toast.update(
+          toastId, 'success',
+          `Import Complete — ${success} Members Added`,
+          skipped > 0
+            ? `${success} members imported successfully. ${skipped} records were skipped (duplicates or errors).`
+            : `All ${success} members have been successfully imported and their contribution fees calculated.`
+        )
         onSuccess()
+      } else {
+        toast.update(toastId, 'error', 'Import Failed', 'No members were imported. Please check the file format and try again.')
       }
     } catch (err: any) {
-      setError(err.response?.data?.message || t('common.error'))
+      const msg = err.response?.data?.message || t('common.error')
+      setError(msg)
+      toast.update(toastId, 'error', 'Import Failed', msg)
     } finally {
       setLoading(false)
     }

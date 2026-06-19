@@ -65,7 +65,7 @@ export default function Layout() {
     { icon: Bot,             label: 'AI Assistant',        path: '/ai-assistant', roles: ['admin', 'sector_officer', 'expert'] },
     { icon: ShieldCheck,     label: t('common.users'),     path: '/users',     roles: ['admin'] },
     { icon: Settings,        label: t('common.settings'),  path: '/settings',  roles: ['admin'] },
-    { icon: Image,           label: 'Landing Page',       path: '/settings/landing-page', roles: ['admin'] },
+    { icon: Image,           label: 'Content Management',       path: '/settings/news', roles: ['admin'] },
   ].filter(item => item.roles.includes(user?.role || ''))
 
   const baseUrl = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api').replace(/\/api$/, '')
@@ -92,9 +92,9 @@ export default function Layout() {
         {/* Logo Section */}
         <div className="flex flex-col items-center justify-center pt-8 pb-6 px-4 border-b border-slate-800/50">
           <div className="relative group">
-            <div className="absolute -inset-1 bg-gradient-to-r from-[var(--gold)] to-amber-500 rounded-full blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
-            <div className="relative bg-white p-1.5 rounded-full shadow-2xl">
-              <img src="/pp-logo.png" alt="Logo" className="w-12 h-12 object-contain" />
+            <div className="absolute -inset-1.5 bg-gradient-to-r from-[var(--gold)] to-amber-500 rounded-full blur-md opacity-30 group-hover:opacity-60 transition duration-1000 group-hover:duration-200"></div>
+            <div className="relative bg-white p-1.5 rounded-full shadow-2xl w-24 h-24 flex items-center justify-center overflow-hidden ring-4 ring-white/10">
+              <img src="/pp-logo.png" alt="Logo" className="w-full h-full object-contain rounded-full" />
             </div>
           </div>
           <div className="mt-3 text-center px-4">

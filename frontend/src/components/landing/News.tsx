@@ -1,7 +1,9 @@
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Calendar, Bell, Users, ChevronRight, Award, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import api from '../../lib/api';
 
 interface NewsItem {
   id: string | number;
@@ -20,8 +22,31 @@ export default function News({ galleryImages }: NewsProps) {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  // Load events/news from uploaded "event" category images, or fall back to official notices
-  const dbEvents = galleryImages.filter(img => img.category === 'event');
+  const [actualNews, setActualNews] = useState<NewsItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchNews = async () => {
+      try {
+        const res = await api.get('/news/latest?count=3');
+        if (res.data.success) {
+          setActualNews(res.data.data.map((item: any) => ({
+            id: item.id,
+            title: item.title,
+            description: item.content,
+            category: item.category || 'News',
+            date: new Date(item.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }),
+            image: item.image
+          })));
+        }
+      } catch (err) {
+        console.error('Failed to load latest news:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchNews();
+  }, []);
 
   const defaultNews: NewsItem[] = [
     {
@@ -50,16 +75,7 @@ export default function News({ galleryImages }: NewsProps) {
     }
   ];
 
-  const newsItems = dbEvents.length > 0 
-    ? dbEvents.map((e, idx) => ({
-        id: e.id,
-        title: e.title || t('landing.news_title'),
-        description: e.description || t('landing.news_title'),
-        category: t('landing.news_official_notice'),
-        date: new Date(e.createdAt || Date.now()).toLocaleDateString(t('landing.news_date_format'), { month: 'short', day: 'numeric', year: 'numeric' }),
-        image: e.image
-      }))
-    : defaultNews;
+  const newsItems = actualNews.length > 0 ? actualNews : defaultNews;
 
   return (
     <section id="news" className="py-28 lg:py-36 bg-gray-50 dark:bg-slate-950 relative [perspective:1200px]">
@@ -114,7 +130,7 @@ export default function News({ galleryImages }: NewsProps) {
               </div>
 
               <div className="p-8 pt-0 mt-4 [transform:translateZ(20px)]">
-                <button onClick={() => navigate('/login')} className="w-full py-3 border border-gray-200 dark:border-slate-800 hover:border-[#0B5D3B] dark:hover:border-[#D4AF37] text-gray-700 dark:text-gray-300 hover:text-[#0B5D3B] dark:hover:text-[#D4AF37] font-bold text-xs uppercase tracking-wider rounded-xl transition-all flex items-center justify-center gap-2 group">
+                <button onClick={() => navigate('/news')} className="w-full py-3 border border-gray-200 dark:border-slate-800 hover:border-[#0B5D3B] dark:hover:border-[#D4AF37] text-gray-700 dark:text-gray-300 hover:text-[#0B5D3B] dark:hover:text-[#D4AF37] font-bold text-xs uppercase tracking-wider rounded-xl transition-all flex items-center justify-center gap-2 group">
                   {t('common.read_more')}
                   <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                 </button>

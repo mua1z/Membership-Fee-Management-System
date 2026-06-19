@@ -23,6 +23,10 @@ const News = sequelize.define('News', {
     type: DataTypes.STRING(100),
     defaultValue: 'news'
   },
+  language: {
+    type: DataTypes.STRING(10),
+    defaultValue: 'en'
+  },
   isActive: {
     type: DataTypes.TINYINT(1),
     defaultValue: 1

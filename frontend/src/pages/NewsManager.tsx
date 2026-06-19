@@ -10,13 +10,22 @@ interface NewsItem {
   content: string
   image: string | null
   category: string
+  language: string
   isActive: number
   createdBy: number
   createdAt: string
   updatedAt: string
 }
 
-export default function NewsManager() {
+const LANGUAGES = [
+  { value: 'en', label: 'English' },
+  { value: 'am', label: 'Amharic (አማርኛ)' },
+  { value: 'om', label: 'Afaan Oromo' },
+  { value: 'so', label: 'Af Somali' },
+  { value: 'ar', label: 'Arabic (العربية)' }
+]
+
+export default function NewsManager({ isComponent = false }: { isComponent?: boolean }) {
   const [news, setNews] = useState<NewsItem[]>([])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -24,7 +33,7 @@ export default function NewsManager() {
   const [showForm, setShowForm] = useState(false)
   const [editing, setEditing] = useState<NewsItem | null>(null)
   const fileRef = useRef<HTMLInputElement>(null)
-  const [form, setForm] = useState({ title: '', content: '', category: 'news' })
+  const [form, setForm] = useState({ title: '', content: '', category: 'news', language: 'en' })
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
 
   useEffect(() => { fetchNews() }, [])
@@ -48,14 +57,14 @@ export default function NewsManager() {
 
   const openCreate = () => {
     setEditing(null)
-    setForm({ title: '', content: '', category: 'news' })
+    setForm({ title: '', content: '', category: 'news', language: 'en' })
     setPreviewUrl(null)
     setShowForm(true)
   }
 
   const openEdit = (item: NewsItem) => {
     setEditing(item)
-    setForm({ title: item.title, content: item.content, category: item.category })
+    setForm({ title: item.title, content: item.content, category: item.category, language: item.language || 'en' })
     setPreviewUrl(null)
     setShowForm(true)
   }
@@ -68,6 +77,7 @@ export default function NewsManager() {
       formData.append('title', form.title)
       formData.append('content', form.content)
       formData.append('category', form.category)
+      formData.append('language', form.language)
       if (fileRef.current?.files?.[0]) {
         formData.append('image', fileRef.current.files[0])
       }
@@ -111,16 +121,25 @@ export default function NewsManager() {
   if (loading) return <PageLoader />
 
   return (
-    <div className="p-6 max-w-6xl mx-auto">
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">News & Announcements</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Manage news articles and announcements</p>
+    <div className={isComponent ? "" : "p-6 max-w-6xl mx-auto"}>
+      {!isComponent && (
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Content Management</h1>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Manage news articles and announcements</p>
+          </div>
+          <button onClick={openCreate} className="flex items-center gap-2 px-4 py-2.5 bg-[#0B5D3B] hover:bg-[#094a2f] text-white rounded-xl text-sm font-semibold transition-colors">
+            <Plus className="w-4 h-4" /> New Article
+          </button>
         </div>
-        <button onClick={openCreate} className="flex items-center gap-2 px-4 py-2.5 bg-[#0B5D3B] hover:bg-[#094a2f] text-white rounded-xl text-sm font-semibold transition-colors">
-          <Plus className="w-4 h-4" /> New Article
-        </button>
-      </div>
+      )}
+      {isComponent && (
+        <div className="flex justify-end mb-6">
+          <button onClick={openCreate} className="flex items-center gap-2 px-4 py-2.5 bg-[#0B5D3B] hover:bg-[#094a2f] text-white rounded-xl text-sm font-semibold transition-colors">
+            <Plus className="w-4 h-4" /> New Article
+          </button>
+        </div>
+      )}
 
       {message.text && (
         <div className={`mb-4 px-4 py-3 rounded-xl text-sm font-medium ${message.type === 'success' ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300' : 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300'}`}>
@@ -131,7 +150,7 @@ export default function NewsManager() {
       <AnimatePresence>
         {showForm && (
           <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden mb-6">
-            <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-2xl p-6 space-y-4">
+            <div className="bg-white dark:bg-slate-900 border-2 border-[#0B5D3B] shadow-xl rounded-2xl p-6 space-y-5 relative">
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-bold text-gray-900 dark:text-white">{editing ? 'Edit Article' : 'New Article'}</h2>
                 <button onClick={() => setShowForm(false)} className="p-1.5 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors">
@@ -141,17 +160,17 @@ export default function NewsManager() {
 
               <div>
                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Title *</label>
-                <input value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} className="w-full px-4 py-2.5 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-xl text-sm focus:ring-2 focus:ring-[#0B5D3B] focus:border-transparent outline-none transition-all text-gray-900 dark:text-white" placeholder="News title" />
+                <input value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} className="w-full px-4 py-3 border-2 border-gray-300 dark:border-slate-600 bg-gray-50 dark:bg-slate-800 rounded-xl text-sm focus:border-[#0B5D3B] focus:ring-4 focus:ring-[#0B5D3B]/20 outline-none transition-all text-gray-900 dark:text-white shadow-sm font-medium" placeholder="News title" />
               </div>
 
               <div>
                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Content</label>
-                <textarea value={form.content} onChange={e => setForm({ ...form, content: e.target.value })} rows={4} className="w-full px-4 py-2.5 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-xl text-sm focus:ring-2 focus:ring-[#0B5D3B] focus:border-transparent outline-none transition-all resize-none text-gray-900 dark:text-white" placeholder="Article content..." />
+                <textarea value={form.content} onChange={e => setForm({ ...form, content: e.target.value })} rows={4} className="w-full px-4 py-3 border-2 border-gray-300 dark:border-slate-600 bg-gray-50 dark:bg-slate-800 rounded-xl text-sm focus:border-[#0B5D3B] focus:ring-4 focus:ring-[#0B5D3B]/20 outline-none transition-all resize-y text-gray-900 dark:text-white shadow-sm font-medium" placeholder="Article content..." />
               </div>
 
               <div>
                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Category</label>
-                <select value={form.category} onChange={e => setForm({ ...form, category: e.target.value })} className="w-full px-4 py-2.5 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 rounded-xl text-sm focus:ring-2 focus:ring-[#0B5D3B] focus:border-transparent outline-none transition-all text-gray-900 dark:text-white">
+                <select value={form.category} onChange={e => setForm({ ...form, category: e.target.value })} className="w-full px-4 py-3 border-2 border-gray-300 dark:border-slate-600 bg-gray-50 dark:bg-slate-800 rounded-xl text-sm focus:border-[#0B5D3B] focus:ring-4 focus:ring-[#0B5D3B]/20 outline-none transition-all text-gray-900 dark:text-white shadow-sm font-medium">
                   <option value="news">News</option>
                   <option value="announcement">Announcement</option>
                   <option value="event">Event</option>
@@ -160,9 +179,18 @@ export default function NewsManager() {
               </div>
 
               <div>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Language</label>
+                <select value={form.language} onChange={e => setForm({ ...form, language: e.target.value })} className="w-full px-4 py-3 border-2 border-gray-300 dark:border-slate-600 bg-gray-50 dark:bg-slate-800 rounded-xl text-sm focus:border-[#0B5D3B] focus:ring-4 focus:ring-[#0B5D3B]/20 outline-none transition-all text-gray-900 dark:text-white shadow-sm font-medium">
+                  {LANGUAGES.map(lang => (
+                    <option key={lang.value} value={lang.value}>{lang.label}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Image</label>
                 <div className="flex items-center gap-4">
-                  <input ref={fileRef} type="file" accept="image/*" onChange={handleFileSelect} className="text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-[#0B5D3B]/10 file:text-[#0B5D3B] hover:file:bg-[#0B5D3B]/20 cursor-pointer" />
+                  <input ref={fileRef} type="file" accept="image/*" onChange={handleFileSelect} className="w-full text-sm text-gray-500 file:mr-4 file:py-3 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-[#0B5D3B]/10 file:text-[#0B5D3B] hover:file:bg-[#0B5D3B]/20 cursor-pointer border-2 border-dashed border-gray-300 dark:border-slate-600 p-2 rounded-xl bg-gray-50 dark:bg-slate-800 transition-all focus:border-[#0B5D3B]" />
                   {(previewUrl || (editing && editing.image)) && (
                     <img src={previewUrl || editing?.image || ''} alt="" className="w-20 h-20 object-cover rounded-xl border border-gray-200 dark:border-slate-700" />
                   )}
@@ -190,7 +218,7 @@ export default function NewsManager() {
           </div>
         ) : (
           news.map((item) => (
-            <motion.div key={item.id} layout initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-2xl p-5 flex items-start gap-4 group hover:border-[#0B5D3B]/30 transition-colors">
+            <motion.div key={item.id} layout initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="bg-white dark:bg-slate-900 border-2 border-gray-200 dark:border-slate-700 shadow-sm rounded-2xl p-5 flex items-start gap-4 group hover:border-[#0B5D3B] hover:shadow-md transition-all">
               <div className="w-20 h-20 rounded-xl overflow-hidden bg-gray-100 dark:bg-slate-800 flex-shrink-0">
                 {item.image ? (
                   <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
@@ -203,6 +231,7 @@ export default function NewsManager() {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#0B5D3B]/10 text-[#0B5D3B]">{item.category}</span>
+                  <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400">{LANGUAGES.find(l => l.value === item.language)?.label || item.language || 'English'}</span>
                   {!item.isActive && <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400">Draft</span>}
                 </div>
                 <h3 className="font-bold text-gray-900 dark:text-white truncate">{item.title}</h3>

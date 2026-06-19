@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import api from '../lib/api'
 import { X } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { useToast } from './Toast'
 
 interface Member {
   _id?: string
@@ -56,6 +57,7 @@ interface MemberModalProps {
 
 export default function MemberModal({ member, onClose, onSuccess, userRole, userSectorUnitId }: MemberModalProps) {
   const { t } = useTranslation()
+  const toast = useToast()
   
   // Dynamic label maps based on sector type
   const SECTOR_UNIT_LABELS: Record<string, string> = {
@@ -258,16 +260,25 @@ export default function MemberModal({ member, onClose, onSuccess, userRole, user
     e.preventDefault()
     setLoading(true)
     setError('')
-
+    const isEditing = !!member?._id
+    const toastId = toast.loading(
+      isEditing ? 'Updating Member Record...' : 'Registering New Member...',
+      isEditing ? 'Saving changes to the member profile.' : 'Processing member registration and fee calculation.'
+    )
     try {
-      if (member?._id) {
+      if (isEditing) {
         await api.put(`/members/${member._id}`, formData)
+        toast.update(toastId, 'success', 'Member Updated Successfully', `${formData.fullName}'s profile has been updated with the latest information.`)
       } else {
         await api.post('/members', formData)
+        toast.update(toastId, 'success', 'Member Registered Successfully', `${formData.fullName} has been registered and their contribution fee has been calculated.`)
       }
       onSuccess()
+      onClose()
     } catch (err: any) {
-      setError(err.response?.data?.message || t('common.error'))
+      const msg = err.response?.data?.message || t('common.error')
+      setError(msg)
+      toast.update(toastId, 'error', isEditing ? 'Update Failed' : 'Registration Failed', msg)
     } finally {
       setLoading(false)
     }

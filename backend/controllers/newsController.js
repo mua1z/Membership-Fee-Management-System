@@ -80,7 +80,7 @@ exports.getById = async (req, res) => {
 
 exports.create = async (req, res) => {
   try {
-    const { title, content, category } = req.body;
+    const { title, content, category, language } = req.body;
     if (!title) return res.status(400).json({ success: false, message: 'Title is required' });
 
     let image = null;
@@ -93,6 +93,7 @@ exports.create = async (req, res) => {
       content: content || '',
       image,
       category: category || 'news',
+      language: language || 'en',
       createdBy: req.userId
     });
 
@@ -107,12 +108,13 @@ exports.update = async (req, res) => {
     const news = await News.findByPk(req.params.id);
     if (!news) return res.status(404).json({ success: false, message: 'News not found' });
 
-    const { title, content, category, isActive } = req.body;
+    const { title, content, category, isActive, language } = req.body;
 
     if (title !== undefined) news.title = title;
     if (content !== undefined) news.content = content;
     if (category !== undefined) news.category = category;
     if (isActive !== undefined) news.isActive = isActive;
+    if (language !== undefined) news.language = language;
 
     if (req.file) {
       if (news.image) {

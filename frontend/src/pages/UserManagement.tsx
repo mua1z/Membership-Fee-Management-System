@@ -237,7 +237,7 @@ export default function UserManagement() {
           toast.type === 'success' ? 'bg-green-600 text-white' : 'bg-red-600 text-white'
         }`}>
           {toast.type === 'success' ? <CheckCircle2 className="w-5 h-5" /> : <AlertCircle className="w-5 h-5" />}
-          <span className="font-medium">{toast.message}</span>
+          <span className="font-bold">{toast.message}</span>
         </div>
       )}
 
@@ -328,14 +328,14 @@ export default function UserManagement() {
                         )}
                       </div>
                       <div>
-                        <p className="font-medium text-sm">{u.fullName}</p>
+                        <p className="font-bold text-sm">{u.fullName}</p>
                         <p className="text-xs text-gray-500">{u.email}</p>
                       </div>
                     </div>
                   </td>
                   <td className="text-sm font-mono">@{u.username}</td>
                   <td>
-                    <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${ROLE_COLORS[u.role]}`}>
+                    <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${ROLE_COLORS[u.role]}`}>
                       {t(`common.${u.role}`)}
                     </span>
                   </td>
@@ -343,7 +343,7 @@ export default function UserManagement() {
                   <td>
                     <button onClick={() => handleToggleActive(u)} className="flex items-center gap-1 text-sm">
                       {u.isActive
-                        ? <><ToggleRight className="w-5 h-5 text-green-500" /><span className="text-green-600 font-medium">{t('common.active')}</span></>
+                        ? <><ToggleRight className="w-5 h-5 text-green-500" /><span className="text-green-600 font-bold">{t('common.active')}</span></>
                         : <><ToggleLeft className="w-5 h-5 text-gray-400" /><span className="text-gray-500">{t('common.inactive')}</span></>}
                     </button>
                   </td>
@@ -385,7 +385,7 @@ export default function UserManagement() {
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-lg flex flex-col max-h-[90vh]">
             <div className="flex items-center justify-between p-6 border-b dark:border-gray-700 flex-shrink-0">
-              <h2 className="text-lg font-semibold">{editingUser ? t('common.edit_user') : t('common.create_new_user')}</h2>
+              <h2 className="text-lg font-bold">{editingUser ? t('common.edit_user') : t('common.create_new_user')}</h2>
               <button onClick={() => setShowModal(false)} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
                 <X className="w-5 h-5" />
               </button>
@@ -393,20 +393,20 @@ export default function UserManagement() {
             <div className="p-6 space-y-4 overflow-y-auto flex-1">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium mb-1">{t('common.full_name')} *</label>
+                  <label className="block text-sm font-bold mb-1">{t('common.full_name')} *</label>
                   <input className="input" value={form.fullName} onChange={e => setForm(p => ({ ...p, fullName: e.target.value }))} placeholder={t('common.full_name')} />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">{t('common.username')} *</label>
+                  <label className="block text-sm font-bold mb-1">{t('common.username')} *</label>
                   <input className="input" value={form.username} onChange={e => setForm(p => ({ ...p, username: e.target.value }))} placeholder={t('common.username')} />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">{t('common.email')} *</label>
+                <label className="block text-sm font-bold mb-1">{t('common.email')} *</label>
                 <input className="input" type="email" value={form.email} onChange={e => setForm(p => ({ ...p, email: e.target.value }))} placeholder={t('common.email')} />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">{t('common.role')} *</label>
+                <label className="block text-sm font-bold mb-1">{t('common.role')} *</label>
                 <select
                   className="input"
                   value={form.role}
@@ -426,7 +426,7 @@ export default function UserManagement() {
               {form.role === 'sector_officer' && (
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium mb-1">{t('common.sector_type')} *</label>
+                    <label className="block text-sm font-bold mb-1">{t('common.sector_type')} *</label>
                     <select
                       className="input"
                       value={form.sectorType}
@@ -446,7 +446,7 @@ export default function UserManagement() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-1">{t('common.assigned_sector')} *</label>
+                    <label className="block text-sm font-bold mb-1">{t('common.assigned_sector')} *</label>
                     <select
                       className="input"
                       value={form.sectorUnitId}
@@ -460,7 +460,7 @@ export default function UserManagement() {
                 </div>
               )}
               <div>
-                <label className="block text-sm font-medium mb-1">
+                <label className="block text-sm font-bold mb-1">
                   {editingUser ? t('common.new_password') : t('common.password')} {!editingUser && '*'}
                 </label>
                 <div className="relative">
@@ -481,7 +481,7 @@ export default function UserManagement() {
               </div>
               <div className="flex items-center gap-3">
                 <input type="checkbox" id="isActive" checked={form.isActive} onChange={e => setForm(p => ({ ...p, isActive: e.target.checked }))} className="w-4 h-4" />
-                <label htmlFor="isActive" className="text-sm font-medium">{t('common.account_active')}</label>
+                <label htmlFor="isActive" className="text-sm font-bold">{t('common.account_active')}</label>
               </div>
             </div>
             <div className="flex justify-end gap-3 p-6 border-t dark:border-gray-700 flex-shrink-0">
@@ -504,7 +504,7 @@ export default function UserManagement() {
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md">
             <div className="flex items-center justify-between p-6 border-b dark:border-gray-700">
-              <h2 className="text-lg font-semibold">{t('common.reset_password')}</h2>
+              <h2 className="text-lg font-bold">{t('common.reset_password')}</h2>
               <button onClick={() => setShowPasswordModal(false)} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"><X className="w-5 h-5" /></button>
             </div>
             <div className="p-6 space-y-4">
@@ -512,7 +512,7 @@ export default function UserManagement() {
                 {t('common.set_new_password_for')} <strong>{passwordTarget.fullName}</strong> ({passwordTarget.email})
               </p>
               <div>
-                <label className="block text-sm font-medium mb-1">{t('common.new_password')}</label>
+                <label className="block text-sm font-bold mb-1">{t('common.new_password')}</label>
                 <input
                   className="input"
                   type="password"

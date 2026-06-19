@@ -247,7 +247,7 @@ export default function Dashboard() {
             <span className="text-[var(--gold)]">{t('common.app_title')}</span>
           </h1>
           {user?.role === 'sector_officer' && (
-            <p className="text-[11px] text-slate-500 font-medium">
+            <p className="text-[11px] text-slate-500 font-bold">
               {t('dashboard.active_sectors')}: <span className="text-[var(--gold)] font-bold">{user?.assignedSectorUnit?.name || t('dashboard.active_sectors')}</span>
             </p>
           )}
@@ -274,7 +274,7 @@ export default function Dashboard() {
               <p className="text-xl font-black text-slate-900 dark:text-white tracking-tight">{card.value}</p>
               <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">{card.title}</p>
             </div>
-            <p className="text-[9px] font-medium text-slate-400 border-t border-slate-50 dark:border-slate-800 pt-1.5 mt-1 relative z-10">
+            <p className="text-[9px] font-bold text-slate-400 border-t border-slate-50 dark:border-slate-800 pt-1.5 mt-1 relative z-10">
               {card.subtext}
             </p>
           </motion.div>
@@ -319,7 +319,7 @@ export default function Dashboard() {
                 </div>
                 {aiInsights.insight && (
                   <div className="mt-2 pt-2 border-t border-amber-200/50 dark:border-amber-900/20">
-                    <p className="text-[11px] text-slate-600 dark:text-slate-400 italic flex items-center gap-1.5">
+                    <p className="text-[11px] text-slate-600 dark:text-slate-400 italic font-bold flex items-center gap-1.5">
                       <Sparkles className="w-3 h-3 text-amber-500 shrink-0" />
                       {aiInsights.insight}
                     </p>
@@ -337,7 +337,7 @@ export default function Dashboard() {
       <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {!isSectorOfficer && (
           <motion.div whileHover={{ scale: 1.01 }} className="card">
-            <h3 className="text-lg font-semibold mb-4">{t('common.members_by_unit')}</h3>
+            <h3 className="text-lg font-bold mb-4">{t('common.members_by_unit')}</h3>
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={data.membersByBranch}>
                 <CartesianGrid strokeDasharray="3 3" />
@@ -352,7 +352,7 @@ export default function Dashboard() {
 
         {!isSectorOfficer ? (
           <motion.div whileHover={{ scale: 1.01 }} className="card">
-            <h3 className="text-lg font-semibold mb-4">{t('common.members_by_type')}</h3>
+            <h3 className="text-lg font-bold mb-4">{t('common.members_by_type')}</h3>
             <ResponsiveContainer width="100%" height={300}>
               <PieChart>
                 <Pie
@@ -382,7 +382,7 @@ export default function Dashboard() {
           </motion.div>
         ) : (
           <motion.div whileHover={{ scale: 1.01 }} className="card">
-            <h3 className="text-lg font-semibold mb-4">{t('common.members_by_category')}</h3>
+            <h3 className="text-lg font-bold mb-4">{t('common.members_by_category')}</h3>
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={data.membersByCategory?.length ? data.membersByCategory : data.membersByType}>
                 <CartesianGrid strokeDasharray="3 3" />
@@ -405,10 +405,10 @@ export default function Dashboard() {
         <motion.div variants={itemVariants}>
           <motion.div whileHover={{ scale: 1.01 }} className="card">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold">{t('dashboard.sector_performance')}</h3>
+              <h3 className="text-lg font-bold">{t('dashboard.sector_performance')}</h3>
               <button
                 onClick={() => setShowSectorChart(!showSectorChart)}
-                className="text-xs text-amber-600 hover:text-amber-700 font-medium flex items-center gap-1"
+                className="text-xs text-amber-600 hover:text-amber-700 font-bold flex items-center gap-1"
               >
                 <BarChart3 className="w-3.5 h-3.5" />
                 {showSectorChart ? t('buttons.export') : t('buttons.search')}
@@ -440,11 +440,11 @@ export default function Dashboard() {
                   <tbody>
                     {sectorAnalytics.map((s, i) => (
                       <tr key={i} className="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50">
-                        <td className="py-2 px-2 font-medium">{s.sector}</td>
-                        <td className="text-right py-2 px-2">{s.members}</td>
-                        <td className="text-right py-2 px-2 text-emerald-600 font-medium">{s.paid}</td>
-                        <td className="text-right py-2 px-2 text-rose-600 font-medium">{s.unpaid}</td>
-                        <td className="text-right py-2 px-2">ETB {s.collectionAmount.toLocaleString()}</td>
+                        <td className="py-2 px-2 font-bold">{s.sector}</td>
+                        <td className="text-right py-2 px-2 font-bold">{s.members}</td>
+                        <td className="text-right py-2 px-2 text-emerald-600 font-bold">{s.paid}</td>
+                        <td className="text-right py-2 px-2 text-rose-600 font-bold">{s.unpaid}</td>
+                        <td className="text-right py-2 px-2 font-bold">ETB {s.collectionAmount.toLocaleString()}</td>
                         <td className="text-right py-2 px-2">
                           <span className={`font-bold ${s.collectionRate >= 75 ? 'text-emerald-600' : s.collectionRate >= 50 ? 'text-amber-600' : 'text-rose-600'}`}>
                             {s.collectionRate}%
@@ -463,10 +463,10 @@ export default function Dashboard() {
       {/* Top Contributors & Revenue by Type */}
       <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <motion.div whileHover={{ scale: 1.01 }} className="card">
-          <h3 className="text-lg font-semibold mb-4">{t('common.top_contributors')}</h3>
+          <h3 className="text-lg font-bold mb-4">{t('common.top_contributors')}</h3>
           <div className="space-y-3">
             {data.topContributors.length === 0 ? (
-              <p className="text-center text-gray-400 py-6">{t('common.no_contributors')}</p>
+              <p className="text-center font-bold text-gray-400 py-6">{t('common.no_contributors')}</p>
             ) : (
               data.topContributors.map((member, index) => (
                 <div key={index} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
@@ -475,11 +475,11 @@ export default function Dashboard() {
                       {index + 1}
                     </span>
                     <div>
-                      <p className="font-medium text-sm">{member.fullName}</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">{member.memberId} &middot; {member.branch}</p>
+                      <p className="font-bold text-sm">{member.fullName}</p>
+                      <p className="text-xs font-bold text-gray-500 dark:text-gray-400">{member.memberId} &middot; {member.branch}</p>
                     </div>
                   </div>
-                  <span className="font-semibold text-green-600 text-sm">ETB {member.contribution.monthlyFee.toLocaleString()}</span>
+                  <span className="font-bold text-green-600 text-sm">ETB {member.contribution.monthlyFee.toLocaleString()}</span>
                 </div>
               ))
             )}
@@ -488,7 +488,7 @@ export default function Dashboard() {
 
         {!isSectorOfficer && (
           <motion.div whileHover={{ scale: 1.01 }} className="card">
-            <h3 className="text-lg font-semibold mb-4">{t('common.revenue_by_type')}</h3>
+            <h3 className="text-lg font-bold mb-4">{t('common.revenue_by_type')}</h3>
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={data.revenueByType}>
                 <CartesianGrid strokeDasharray="3 3" />
@@ -506,7 +506,7 @@ export default function Dashboard() {
       {/* Members by Sector */}
       {!isSectorOfficer && data.membersBySector?.length > 0 && (
         <motion.div variants={itemVariants} whileHover={{ scale: 1.01 }} className="card">
-          <h3 className="text-lg font-semibold mb-4">{t('common.members_by_sector')}</h3>
+          <h3 className="text-lg font-bold mb-4">{t('common.members_by_sector')}</h3>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={data.membersBySector.slice(0, 15)}>
               <CartesianGrid strokeDasharray="3 3" />

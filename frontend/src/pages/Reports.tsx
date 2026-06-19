@@ -136,11 +136,11 @@ export default function Reports() {
           <p className="text-slate-500">{t('report.financial_audit')}</p>
         </div>
         <div className="flex gap-2">
-          <button onClick={handleSectorExport} className="bg-[#dfab3b] hover:bg-[#c99a35] text-white px-4 py-2 rounded font-semibold flex items-center gap-2 text-sm shadow-sm transition-colors">
+          <button onClick={handleSectorExport} className="bg-[#dfab3b] hover:bg-[#c99a35] text-white px-4 py-2 rounded font-bold flex items-center gap-2 text-sm shadow-sm transition-colors">
             <Download className="w-4 h-4" />
             {t('report.export_excel')}
           </button>
-          <button onClick={handlePrint} className="bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 px-4 py-2 rounded font-semibold flex items-center gap-2 text-sm transition-colors">
+          <button onClick={handlePrint} className="bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 px-4 py-2 rounded font-bold flex items-center gap-2 text-sm transition-colors">
             <Printer className="w-4 h-4" />
             {t('buttons.print')}
           </button>
@@ -162,7 +162,7 @@ export default function Reports() {
               </div>
               <div className="min-w-0 flex-1">
                 <p className="text-lg xl:text-xl font-bold text-slate-900 dark:text-white break-words">{s.value}</p>
-                <p className="text-xs font-medium text-slate-500 mt-0.5 break-words">{s.label}</p>
+                <p className="text-xs font-bold text-slate-500 mt-0.5 break-words">{s.label}</p>
               </div>
             </div>
           ))}
@@ -181,7 +181,7 @@ export default function Reports() {
               className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
             />
           </div>
-          <button className="flex items-center gap-2 px-5 py-2.5 bg-slate-50 hover:bg-slate-100 dark:bg-slate-900/50 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-300 transition-colors">
+          <button className="flex items-center gap-2 px-5 py-2.5 bg-slate-50 hover:bg-slate-100 dark:bg-slate-900/50 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-bold text-slate-700 dark:text-slate-300 transition-colors">
             <Filter className="w-4 h-4" />
             {t('common.filter')}
           </button>
@@ -289,7 +289,7 @@ export default function Reports() {
                 ) : (
                   paginatedSectors.map((sector: any) => (
                     <tr key={sector.sectorId} className="border-b border-slate-100 dark:border-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors">
-                      <td className="py-4 px-5 text-sm font-semibold text-slate-700 dark:text-slate-200">{sector.sectorName}</td>
+                      <td className="py-4 px-5 text-sm font-bold text-slate-700 dark:text-slate-200">{sector.sectorName}</td>
                       <td className="py-4 px-5 text-sm text-slate-600 dark:text-slate-400">{sector.totalMembers}</td>
                       <td className="py-4 px-5">
                         <span className="inline-flex items-center justify-center px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-400 text-xs font-bold min-w-[2.5rem]">
@@ -328,7 +328,7 @@ export default function Reports() {
 
           {totalPages > 1 && (
             <div className="flex items-center justify-between px-5 py-3 border-t border-slate-100 dark:border-slate-700 print:hidden">
-              <p className="text-[11px] text-slate-500 font-medium">
+              <p className="text-[11px] text-slate-500 font-bold">
                 {t('table.showing', { start: Math.min(filteredSectors.length, 1 + (currentPage - 1) * ITEMS_PER_PAGE), end: Math.min(currentPage * ITEMS_PER_PAGE, filteredSectors.length), total: filteredSectors.length })}
               </p>
               <div className="flex gap-1">

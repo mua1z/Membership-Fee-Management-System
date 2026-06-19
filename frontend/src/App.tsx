@@ -8,6 +8,7 @@ import Reports from './pages/Reports'
 import Settings from './pages/Settings'
 import LandingPageManager from './pages/LandingPageManager'
 import NewsManager from './pages/NewsManager'
+import ContentManagement from './pages/ContentManagement'
 import Profile from './pages/Profile'
 import UserManagement from './pages/UserManagement'
 import AIAssistant from './pages/AIAssistant'
@@ -26,6 +27,7 @@ import UpdatePrompt from './components/UpdatePrompt'
 import useServiceWorker from './hooks/useServiceWorker'
 import useOnlineStatus from './hooks/useOnlineStatus'
 import { useEffect } from 'react'
+import { ToastProvider } from './components/Toast'
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { user } = useAuth()
@@ -73,7 +75,7 @@ function AppContent() {
           <Route path="reports" element={<Reports />} />
           <Route path="settings" element={<Settings />} />
           <Route path="settings/landing-page" element={<LandingPageManager />} />
-          <Route path="settings/news" element={<NewsManager />} />
+          <Route path="settings/news" element={<ContentManagement />} />
           <Route path="profile" element={<Profile />} />
           <Route path="users" element={<UserManagement />} />
           <Route path="ai-assistant" element={<AIAssistant />} />
@@ -89,7 +91,9 @@ export default function App() {
   return (
     <Router>
       <AuthProvider>
-        <AppContent />
+        <ToastProvider>
+          <AppContent />
+        </ToastProvider>
       </AuthProvider>
     </Router>
   )

@@ -34,17 +34,21 @@ interface ContentMap {
 }
 
 const IMAGE_CATEGORIES = [
-  { value: 'building', label: 'Building', icon: LayoutDashboard, desc: 'Building exterior/interior photographs' },
+  { value: 'hero', label: 'Hero Banner', icon: LayoutDashboard, desc: 'Full-screen hero background image' },
+  { value: 'office_building', label: 'Office Building', icon: LayoutDashboard, desc: 'Building exterior/interior photographs' },
   { value: 'leadership', label: 'Leadership', icon: Star, desc: 'Leadership/executive office photograph' },
-  { value: 'meetings', label: 'Meetings', icon: ImageIcon, desc: 'Staff and board meetings' },
   { value: 'events', label: 'Events', icon: Sparkles, desc: 'Special events and ceremonies' },
-  { value: 'community', label: 'Community', icon: ImageIcon, desc: 'Community engagement and outreach' },
-  { value: 'gallery', label: 'General Gallery', icon: ImageIcon, desc: 'General gallery photos' },
+  { value: 'community', label: 'Community Activities', icon: ImageIcon, desc: 'Community engagement and outreach' },
+  { value: 'meetings', label: 'Meetings', icon: ImageIcon, desc: 'Staff and board meetings' },
+  { value: 'training', label: 'Training Programs', icon: ImageIcon, desc: 'Capacity building and training' },
+  { value: 'projects', label: 'Projects', icon: ImageIcon, desc: 'Development projects and initiatives' },
+  { value: 'announcements', label: 'Announcements', icon: ImageIcon, desc: 'Official announcements and notices' },
+  { value: 'gallery', label: 'Gallery', icon: ImageIcon, desc: 'General gallery photos' },
 ]
 
 const LANGUAGES = [
   { value: 'en', label: 'English' },
-  { value: 'am', label: 'አማርኛ' },
+  { value: 'am', label: 'áŠ áˆ›áˆ­áŠ›' },
   { value: 'om', label: 'Afaan Oromoo' },
   { value: 'so', label: 'Soomaali' },
 ]
@@ -102,7 +106,7 @@ function formatFileSize(bytes: number | null): string {
   return (bytes / (1024 * 1024)).toFixed(1) + ' MB'
 }
 
-export default function LandingPageManager({ isComponent = false }: { isComponent?: boolean }) {
+export default function GalleryManager() {
   const [images, setImages] = useState<LandingImage[]>([])
   const [content, setContent] = useState<ContentMap>({})
   const [loading, setLoading] = useState(true)
@@ -345,36 +349,12 @@ export default function LandingPageManager({ isComponent = false }: { isComponen
 
   const filteredImages = images
 
-  const tabs = [
     { id: 'images', label: 'Image Gallery', icon: ImageIcon },
     { id: 'upload', label: 'Upload Image', icon: Upload },
-    ...(isComponent ? [] : [{ id: 'content', label: 'Edit Content', icon: Edit3 }]),
   ]
 
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className={isComponent ? "space-y-4" : "space-y-6"}>
-      {/* Header */}
-      {!isComponent && (
-        <div className="flex items-center justify-between flex-wrap gap-4">
-          <div>
-            <h1 className="text-2xl font-bold font-outfit">Landing Page Manager</h1>
-            <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">
-              Manage images, gallery, content, and site statistics
-            </p>
-          </div>
-          <div className="flex items-center gap-3">
-            <a href="/" target="_blank" rel="noreferrer"
-              className="btn btn-secondary flex items-center gap-2 text-xs">
-              <Eye className="w-4 h-4" />
-              View Live Site
-            </a>
-            <button onClick={fetchData} className="btn btn-ghost flex items-center gap-2 text-xs">
-              <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-              Refresh
-            </button>
-          </div>
-        </div>
-      )}
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
 
       {/* Notification */}
       <AnimatePresence>
@@ -416,7 +396,7 @@ export default function LandingPageManager({ isComponent = false }: { isComponen
       </div>
 
       <div className="card">
-        {/* ── TAB: IMAGE GALLERY ─────────────────────── */}
+        {/* â”€â”€ TAB: IMAGE GALLERY â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
         {activeTab === 'images' && (
           <div>
             {/* Toolbar */}
@@ -657,7 +637,7 @@ export default function LandingPageManager({ isComponent = false }: { isComponen
           </div>
         )}
 
-        {/* ── TAB: UPLOAD ──────────────────────────────── */}
+        {/* â”€â”€ TAB: UPLOAD â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
         {activeTab === 'upload' && (
           <div className="max-w-3xl mx-auto">
             <div className="text-center mb-8">
@@ -688,7 +668,7 @@ export default function LandingPageManager({ isComponent = false }: { isComponen
                         <Upload className="w-8 h-8 text-primary" />
                       </div>
                       <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">Click to select an image</p>
-                      <p className="text-xs text-gray-400 mt-1">JPG, PNG, WEBP — Max 10MB</p>
+                      <p className="text-xs text-gray-400 mt-1">JPG, PNG, WEBP â€” Max 10MB</p>
                     </div>
                   )}
                 </div>
@@ -708,7 +688,7 @@ export default function LandingPageManager({ isComponent = false }: { isComponen
                     onChange={e => setUploadForm(f => ({ ...f, category: e.target.value }))}
                     className="input">
                     {IMAGE_CATEGORIES.map(cat => (
-                      <option key={cat.value} value={cat.value}>{cat.label} — {cat.desc}</option>
+                      <option key={cat.value} value={cat.value}>{cat.label} â€” {cat.desc}</option>
                     ))}
                   </select>
                 </div>
@@ -790,14 +770,14 @@ export default function LandingPageManager({ isComponent = false }: { isComponen
           </div>
         )}
 
-        {/* ── TAB: CONTENT ─────────────────────────────── */}
+        {/* â”€â”€ TAB: CONTENT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
         {activeTab === 'content' && (
           <div>
             <div className="flex items-center justify-between mb-6">
               <div>
                 <h2 className="text-xl font-bold font-outfit">Edit Landing Page Content</h2>
                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                  Changes are published immediately — no save button needed for instant preview
+                  Changes are published immediately â€” no save button needed for instant preview
                 </p>
               </div>
               <button onClick={handleSaveContent} disabled={saving}
@@ -806,27 +786,6 @@ export default function LandingPageManager({ isComponent = false }: { isComponen
                 {saving ? 'Saving...' : 'Save All Changes'}
               </button>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {(() => {
-                const knownKeys = new Set(contentFields.map(f => f.key))
-                const extraKeys = Object.keys(editContent).filter(k => !knownKeys.has(k))
-                const allFields = [
-                  ...contentFields,
-                  ...extraKeys.map(k => ({ key: k, label: k.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()), type: inferFieldType(editContent[k]) }))
-                ]
-                return allFields.map(field => (
-                  <div key={field.key} className={field.type === 'textarea' ? 'md:col-span-2' : ''}>
-                    <label className="block text-sm font-medium mb-1">{field.label}</label>
-                    {field.type === 'textarea' ? (
-                      <textarea value={editContent[field.key] || ''}
-                        onChange={e => setEditContent(f => ({ ...f, [field.key]: e.target.value }))}
-                        className="input" rows={4} placeholder={`Enter ${field.label.toLowerCase()}...`} />
-                    ) : (
-                      <input type="text" value={editContent[field.key] || ''}
-                        onChange={e => setEditContent(f => ({ ...f, [field.key]: e.target.value }))}
-                        className="input" placeholder={`Enter ${field.label.toLowerCase()}...`} />
-                    )}
-                  </div>
                 ))
               })()}
             </div>
@@ -878,7 +837,7 @@ export default function LandingPageManager({ isComponent = false }: { isComponen
                 {previewModal.description && <p className="text-sm text-gray-600 dark:text-gray-400">{previewModal.description}</p>}
                 <div className="flex flex-wrap gap-4 text-xs text-gray-500 pt-3 border-t border-gray-100 dark:border-gray-700">
                   <span>Category: {IMAGE_CATEGORIES.find(c => c.value === previewModal.category)?.label || previewModal.category}</span>
-                  {previewModal.imageWidth && <span>{previewModal.imageWidth} × {previewModal.imageHeight}px</span>}
+                  {previewModal.imageWidth && <span>{previewModal.imageWidth} Ã— {previewModal.imageHeight}px</span>}
                   {previewModal.fileSize && <span>{formatFileSize(previewModal.fileSize)}</span>}
                   <span>Language: {LANGUAGES.find(l => l.value === previewModal.language)?.label || previewModal.language}</span>
                   <span>Status: {previewModal.isActive ? 'Active' : 'Inactive'}</span>
@@ -989,6 +948,34 @@ export default function LandingPageManager({ isComponent = false }: { isComponen
         )}
       </AnimatePresence>
 
+      {/* Info Panel */}
+      <div className="bg-gradient-to-r from-primary/5 to-gold/5 border border-primary/10 rounded-xl p-6">
+        <div className="flex items-start gap-4">
+          <Globe className="w-6 h-6 text-primary flex-shrink-0 mt-0.5" />
+          <div>
+            <h3 className="font-bold text-gray-900 dark:text-white mb-1 font-outfit">Live Publishing</h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              All changes are published immediately â€” no deployment or rebuild required.
+              Visit the <a href="/" target="_blank" className="font-bold text-primary hover:underline">live landing page</a> to see your updates in real-time.
+              Statistics are fetched directly from the database and reflect current data.
+            </p>
+            <div className="flex flex-wrap gap-6 mt-4 text-xs text-gray-500">
+              <span className="flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                Live Updates
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                Auto-published
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-gold"></span>
+                No Code Required
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
     </motion.div>
   )
 }

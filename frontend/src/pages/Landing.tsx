@@ -34,7 +34,6 @@ export default function Landing() {
           setStats(statsRes.data.data);
         }
         if (contentRes.data.success) {
-          setContent(contentRes.data.data.content || {});
           setGalleryImages(contentRes.data.data.images || []);
         }
       } catch (err) {
