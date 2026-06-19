@@ -189,6 +189,15 @@ async function main() {
     await connectDB();
     await sequelize.sync({ alter: false });
 
+    // Migrate wingType column from ENUM to STRING (TiDB limitation: can't use alter:true)
+    try {
+      await sequelize.query("ALTER TABLE `members` MODIFY `wingType` VARCHAR(100) DEFAULT NULL;");
+      console.log('✅ wingType column migrated');
+    } catch (e) {
+      // Column may already be VARCHAR — that's fine
+      if (!e.message?.includes('Duplicate')) console.log('ℹ️  wingType migration:', e.message);
+    }
+
     await ensureSectorStructure();
     await seedLandingContent();
     await seedUsers();
