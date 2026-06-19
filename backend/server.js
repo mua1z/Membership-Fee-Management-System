@@ -152,6 +152,7 @@ app.use('/api/ai',            require('./routes/aiRoutes'));
 app.use('/api/analytics',     require('./routes/analyticsRoutes'));
 app.use('/api/sector-payments', require('./routes/sectorPaymentRoutes'));
 app.use('/api/landing',        require('./routes/landingPageRoutes'));
+app.use('/api/news',           require('./routes/newsRoutes'));
 
 // Health Check (must be before SPA fallback)
 app.get('/api/health', (req, res) => {
@@ -290,6 +291,12 @@ const start = async () => {
     await require('./migrations/create_landing_page_tables')();
   } catch (e) {
     console.error('⚠️ Landing page migration error:', e.message);
+  }
+
+  try {
+    await require('./migrations/create_news_table')();
+  } catch (e) {
+    console.error('⚠️ News table migration error:', e.message);
   }
 
   // ── Expand User.role enum to include super_admin ───────────────────────

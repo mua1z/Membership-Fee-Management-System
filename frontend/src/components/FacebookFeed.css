@@ -1,0 +1,145 @@
+.facebook-feed-wrapper {
+  width: 100%;
+}
+
+.facebook-feed-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.facebook-feed-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 24px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.facebook-icon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.facebook-feed-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: #111827;
+  margin: 0;
+  font-family: 'Outfit', system-ui, sans-serif;
+}
+
+.facebook-feed-body {
+  min-height: 400px;
+  display: flex;
+  justify-content: center;
+}
+
+.facebook-feed-body .fb-page {
+  width: 100% !important;
+}
+
+.facebook-feed-body .fb-page iframe,
+.facebook-feed-body .fb-page span,
+.facebook-feed-body .fb-page > div {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+.facebook-feed-loading,
+.facebook-feed-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+  text-align: center;
+  width: 100%;
+}
+
+.facebook-feed-spinner {
+  width: 38px;
+  height: 38px;
+  border: 3px solid #e5e7eb;
+  border-top-color: #1877F2;
+  border-radius: 50%;
+  animation: facebook-spin 0.7s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes facebook-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.facebook-feed-loading p {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0;
+  font-weight: 500;
+}
+
+.facebook-feed-error p {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0 0 18px;
+  max-width: 260px;
+  line-height: 1.5;
+}
+
+.facebook-feed-visit-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 24px;
+  background: #1877F2;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: 12px;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+
+.facebook-feed-visit-btn:hover {
+  background: #166fe5;
+}
+
+@media (prefers-color-scheme: dark) {
+  .facebook-feed-card {
+    background: #0f172a;
+    border-color: #1e293b;
+  }
+
+  .facebook-feed-header {
+    border-bottom-color: #1e293b;
+  }
+
+  .facebook-feed-title {
+    color: #f1f5f9;
+  }
+
+  .facebook-feed-loading p,
+  .facebook-feed-error p {
+    color: #94a3b8;
+  }
+}
+
+@media (max-width: 640px) {
+  .facebook-feed-header {
+    padding: 14px 16px;
+  }
+
+  .facebook-feed-title {
+    font-size: 15px;
+  }
+
+  .facebook-feed-loading,
+  .facebook-feed-error {
+    padding: 50px 16px;
+  }
+}

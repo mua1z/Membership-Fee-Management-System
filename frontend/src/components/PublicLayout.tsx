@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Outlet, useNavigate, Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Menu, X, Mail, Phone, Languages, Shield, Globe, Sun, Moon, Download, Smartphone, Monitor } from 'lucide-react';
+import { Menu, X, Mail, Phone, Languages, Shield, Globe, Sun, Moon } from 'lucide-react';
 import { getEthiopianYear } from '../utils/ethiopianCalendar';
 import LanguageSwitcher from './LanguageSwitcher';
 import InstallAppButton from './InstallAppButton';
+import PlatformInstallButton from './PlatformInstallButton';
 
 export default function PublicLayout() {
   const { t, i18n } = useTranslation();
@@ -249,27 +250,9 @@ export default function PublicLayout() {
               </div>
               <div className="flex flex-wrap items-center gap-3">
                 <InstallAppButton />
-                <a
-                  href="#"
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs uppercase tracking-wider rounded-lg transition-all duration-300 active:scale-95"
-                >
-                  <Smartphone className="w-4 h-4" />
-                  Android
-                </a>
-                <a
-                  href="#"
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs uppercase tracking-wider rounded-lg transition-all duration-300 active:scale-95"
-                >
-                  <Monitor className="w-4 h-4" />
-                  Windows
-                </a>
-                <a
-                  href="#"
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs uppercase tracking-wider rounded-lg transition-all duration-300 active:scale-95"
-                >
-                  <Download className="w-4 h-4" />
-                  macOS
-                </a>
+                <PlatformInstallButton platform="android" />
+                <PlatformInstallButton platform="windows" />
+                <PlatformInstallButton platform="macos" />
               </div>
             </div>
           </div>

@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Share2, Plus, Check, Smartphone, Monitor, Apple } from 'lucide-react';
+import { X, Share2, Plus, Check, Smartphone, Monitor, Apple, Globe } from 'lucide-react';
 import { getIOSInstallGuide } from '../utils/deviceDetection';
 
 interface DeviceInfo {
@@ -16,9 +16,22 @@ interface Props {
   isOpen: boolean;
   onClose: () => void;
   deviceInfo: DeviceInfo;
+  targetPlatform?: string;
 }
 
-export default function InstallGuideModal({ isOpen, onClose, deviceInfo }: Props) {
+export default function InstallGuideModal({ isOpen, onClose, deviceInfo, targetPlatform }: Props) {
+  if (targetPlatform === 'ios') {
+    return <IOSGuide isOpen={isOpen} onClose={onClose} />;
+  }
+
+  if (targetPlatform === 'android' || targetPlatform === 'windows' || targetPlatform === 'macos') {
+    const isCurrentPlatform =
+      (targetPlatform === 'android' && deviceInfo.isAndroid) ||
+      (targetPlatform === 'windows' && deviceInfo.isWindows) ||
+      (targetPlatform === 'macos' && deviceInfo.isMac);
+    return <DesktopGuide isOpen={isOpen} onClose={onClose} deviceInfo={deviceInfo} targetOs={targetPlatform} isCurrentPlatform={isCurrentPlatform} />;
+  }
+
   if (deviceInfo.isIOS) {
     return <IOSGuide isOpen={isOpen} onClose={onClose} />;
   }
@@ -101,7 +114,7 @@ function IOSGuide({ isOpen, onClose }: { isOpen: boolean; onClose: () => void })
   );
 }
 
-function DesktopGuide({ isOpen, onClose, deviceInfo }: { isOpen: boolean; onClose: () => void; deviceInfo: DeviceInfo }) {
+function DesktopGuide({ isOpen, onClose, deviceInfo, targetOs, isCurrentPlatform }: { isOpen: boolean; onClose: () => void; deviceInfo: DeviceInfo; targetOs?: string; isCurrentPlatform?: boolean }) {
   const getBrowserName = () => {
     const ua = navigator.userAgent;
     if (/edge/i.test(ua)) return 'Microsoft Edge';
@@ -113,7 +126,18 @@ function DesktopGuide({ isOpen, onClose, deviceInfo }: { isOpen: boolean; onClos
     return 'your browser';
   };
 
+  const osLabel = targetOs
+    ? { android: 'Android', windows: 'Windows', macos: 'macOS', linux: 'Linux', chromeos: 'ChromeOS' }[targetOs] || 'Desktop'
+    : deviceInfo.isWindows ? 'Windows' : deviceInfo.isMac ? 'macOS' : deviceInfo.isLinux ? 'Linux' : 'ChromeOS';
+
   const getSteps = () => {
+    if (!isCurrentPlatform) {
+      return [
+        { icon: Globe, text: `Open this website on your ${osLabel} device` },
+        { icon: Monitor, text: 'Use Chrome, Edge, or Safari browser to open the page' },
+        { icon: Check, text: 'Click the install icon in the address bar or use the "Install App" button' }
+      ];
+    }
     const browser = getBrowserName();
     if (browser === 'Safari') {
       return [
@@ -155,9 +179,10 @@ function DesktopGuide({ isOpen, onClose, deviceInfo }: { isOpen: boolean; onClos
                 </div>
                 <div>
                   <h3 className="font-bold text-sm text-slate-900 dark:text-white">
-                    Install on {deviceInfo.isWindows ? 'Windows' : deviceInfo.isMac ? 'macOS' : deviceInfo.isLinux ? 'Linux' : 'ChromeOS'}
+                    {isCurrentPlatform ? `Install on ${osLabel}` : `Install on ${osLabel}`}
                   </h3>
-                  <p className="text-[10px] text-slate-500 dark:text-slate-400">via {getBrowserName()}</p>
+                  {isCurrentPlatform && <p className="text-[10px] text-slate-500 dark:text-slate-400">via {getBrowserName()}</p>}
+                  {!isCurrentPlatform && <p className="text-[10px] text-slate-500 dark:text-slate-400">Open this site on your {osLabel} device</p>}
                 </div>
               </div>
               <button onClick={onClose} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors">

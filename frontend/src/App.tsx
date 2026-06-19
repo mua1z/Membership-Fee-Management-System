@@ -7,6 +7,7 @@ import Payments from './pages/Payments'
 import Reports from './pages/Reports'
 import Settings from './pages/Settings'
 import LandingPageManager from './pages/LandingPageManager'
+import NewsManager from './pages/NewsManager'
 import Profile from './pages/Profile'
 import UserManagement from './pages/UserManagement'
 import AIAssistant from './pages/AIAssistant'
@@ -72,6 +73,7 @@ function AppContent() {
           <Route path="reports" element={<Reports />} />
           <Route path="settings" element={<Settings />} />
           <Route path="settings/landing-page" element={<LandingPageManager />} />
+          <Route path="settings/news" element={<NewsManager />} />
           <Route path="profile" element={<Profile />} />
           <Route path="users" element={<UserManagement />} />
           <Route path="ai-assistant" element={<AIAssistant />} />
