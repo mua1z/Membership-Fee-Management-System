@@ -85,29 +85,29 @@ const URBAN_WOREDAS = [
 
 // ─── Secondary Schools ────────────────────────────────────────────────────────
 const SECONDARY_SCHOOLS = [
-  '18.1 Dire Dawa General Secondary School',
-  '18.2 Addis Ketema Secondary School',
-  '18.3 Legehare Secondary School',
-  '18.4 Afetisa Secondary School',
-  '18.5 Mariam Sefer Secondary School',
-  '18.6 Sabiyan Secondary School',
-  '18.7 Adisu Secondary School',
-  '18.8 Melka Jebdu Secondary School',
+  'Dire Dawa Comprehensive Secondary School',
+  'Addis Ketema Secondary School',
+  'Legehare Secondary School',
+  'Afetisa Secondary School',
+  'Mariam Sefer Secondary School',
+  'Sabian Secondary School',
+  'Addisu Secondary School',
+  'Melka Jebdu Secondary School',
 ];
 
 // ─── Health Institutions ─────────────────────────────────────────────────────
 const HEALTH_INSTITUTIONS = [
-  '21.1 Dil Chora Hospital',
-  '21.2 Sabiyan Hospital',
-  '21.3 Legehare Health Center',
-  '21.4 Dire Dawa Health Center',
-  '21.5 Genda Kore Health Center',
-  '21.6 Addis Ketema Health Center',
-  '21.7 Goro Health Center',
-  '21.8 Melka Health Center',
-  '21.9 Industrial Village Health Center',
-  '21.10 Dechatu Health Center',
-  '21.11 Genda Gerada Health Center',
+  'Dil Chora Hospital',
+  'Sabian Hospital',
+  'Legehare Health Center',
+  'Dire Dawa Health Center',
+  'Gendekore Health Center',
+  'Addis Ketema Health Center',
+  'Goro Health Center',
+  'Melka Health Center',
+  'Industrial Village Health Center',
+  'Dechatu Health Center',
+  'Gende Gerade Health Center',
 ];
 
 // ─── Rural Clusters ────────────────────────────────────────────────────────────
