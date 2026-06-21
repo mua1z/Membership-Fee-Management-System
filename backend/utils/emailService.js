@@ -15,10 +15,18 @@ const nodemailer = require('nodemailer');
 // ─── Brevo HTTP API ───────────────────────────────────────────────────────────
 function sendViaBrevo({ to, subject, text, html }) {
   return new Promise((resolve) => {
-    const apiKey = (process.env.BREVO_API_KEY || '').trim();
+    // Strip spaces and quotes just in case they were added in Render dashboard
+    let apiKey = (process.env.BREVO_API_KEY3 || '').trim().replace(/^["']|["']$/g, '');
+    
     if (!apiKey) {
-      return resolve({ success: false, error: 'BREVO_API_KEY not set.' });
+      return resolve({ success: false, error: 'BREVO_API_KEY3 not set.' });
     }
+
+    // Mask key for debugging (show first 12 and last 4 chars)
+    const maskedKey = apiKey.length > 16 
+      ? `${apiKey.substring(0, 12)}...${apiKey.substring(apiKey.length - 4)}`
+      : 'INVALID_LENGTH_KEY';
+    console.log(`[EmailService] Using Brevo HTTP API. Key preview: ${maskedKey}`);
 
     const senderEmail = (process.env.SMTP_FROM_EMAIL || process.env.SMTP_USER || '').trim();
     const senderName  = (process.env.SMTP_FROM_NAME  || 'Prosperity Party Dire Dawa').trim();
@@ -119,9 +127,9 @@ async function sendViaSMTP({ to, subject, text, html }) {
 // ─── Public API ───────────────────────────────────────────────────────────────
 const sendEmail = async ({ to, subject, text, html }) => {
   try {
-    // If BREVO_API_KEY is set → always use Brevo (required on Render)
-    if ((process.env.BREVO_API_KEY || '').trim()) {
-      console.log(`[EmailService] Using Brevo HTTP API → ${to}`);
+    // If BREVO_API_KEY3 is set → always use Brevo (required on Render)
+    if ((process.env.BREVO_API_KEY3 || '').trim()) {
+      console.log(`[EmailService] Routing to Brevo HTTP API → ${to}`);
       return await sendViaBrevo({ to, subject, text, html });
     }
 
