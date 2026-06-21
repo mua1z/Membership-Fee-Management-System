@@ -43,7 +43,7 @@ exports.createUser = async (req, res) => {
     const emailCheck = await emailValidator.validate({
       email: email,
       validateRegex: true,
-      validateMx: true,
+      validateMx: false, // Disabled: MX lookups fail/timeout in cloud environments (Render)
       validateTypo: true,
       validateDisposable: true,
       validateSMTP: false,
