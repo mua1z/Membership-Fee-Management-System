@@ -28,7 +28,7 @@ exports.register = async (req, res) => {
     const emailCheck = await emailValidator.validate({
       email: email,
       validateRegex: true,
-      validateMx: true,
+      validateMx: false, // Disabled because MX lookups often fail or timeout in cloud environments (like Render)
       validateTypo: true,
       validateDisposable: true,
       validateSMTP: false,
