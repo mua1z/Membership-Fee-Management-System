@@ -61,7 +61,6 @@ export default function SectorPaymentAuditLogsModal({ paymentId, onClose }: Sect
       totalAmount: 'Total Amount',
       billingMonth: 'Billing Month',
       billingYear: 'Billing Year',
-      transactionRef: 'Transaction Ref',
       bankName: 'Bank Name',
       notes: 'Notes',
       receiptFile: 'Receipt File',
@@ -180,7 +179,6 @@ export default function SectorPaymentAuditLogsModal({ paymentId, onClose }: Sect
                           <p className="font-semibold">Deposit Details:</p>
                           <p>Billing Month: {formatValue('billingMonth', log.newValues.billingMonth)}/{log.newValues.billingYear}</p>
                           <p>Amount: ETB {Number(log.newValues.totalAmount).toLocaleString()}</p>
-                          <p>Transaction Ref: <span className="font-mono">{log.newValues.transactionRef}</span></p>
                         </div>
                       )}
                     </div>

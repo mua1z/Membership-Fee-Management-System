@@ -10,6 +10,7 @@ const {
 } = require('../services/sectorValidationService');
 const fs = require('fs');
 const path = require('path');
+const paymentVerificationService = require('../services/paymentVerificationService');
 
 // Helper to version and rename files
 async function saveVersionedReceipt(paymentId, file) {
@@ -42,14 +43,14 @@ exports.validateDeposit = async (req, res) => {
 // ── Upload sector payment slip ────────────────────────────────────────────
 exports.uploadSlip = async (req, res) => {
   try {
-    const { sectorUnitId, billingMonth, billingYear, totalAmount, transactionRef, bankName, notes } = req.body;
+    const { sectorUnitId, billingMonth, billingYear, totalAmount, bankName, notes, transactionId } = req.body;
 
-    if (!sectorUnitId || !billingMonth || !billingYear || !totalAmount || !transactionRef) {
-      return res.status(400).json({ success: false, message: 'Missing required fields: sectorUnitId, billingMonth, billingYear, totalAmount, transactionRef.' });
+    if (!sectorUnitId || !billingMonth || !billingYear || !totalAmount) {
+      return res.status(400).json({ success: false, message: 'Missing required fields: sectorUnitId, billingMonth, billingYear, totalAmount.' });
     }
 
-    if (!req.file) {
-      return res.status(400).json({ success: false, message: 'Receipt file is required (JPG, PNG, or PDF).' });
+    if (!req.file && !transactionId) {
+      return res.status(400).json({ success: false, message: 'Either a receipt file or a Transaction ID (TID) is required.' });
     }
 
     if (req.user.role === 'sector_officer' && Number(sectorUnitId) !== Number(req.user.sectorUnitId)) {
@@ -78,15 +79,42 @@ exports.uploadSlip = async (req, res) => {
       status = 'FLAGGED';
     }
 
+    let receiptFileName = req.file ? req.file.filename : null;
+    let autoVerified = false;
+
+    // Automatic Verification for Direct Pay (No file uploaded but TID provided)
+    if (!req.file && transactionId) {
+      const verificationResult = await paymentVerificationService.verifyTransaction(bankName, transactionId, depositAmount);
+
+      if (!verificationResult.verified) {
+        return res.status(400).json({ 
+          success: false, 
+          message: `Automatic verification failed: ${verificationResult.error}` 
+        });
+      }
+
+      autoVerified = true;
+      if (status === 'PENDING') {
+        status = 'APPROVED';
+      }
+
+      try {
+        const generatedPdfName = await paymentVerificationService.generateReceiptPDF(verificationResult, null);
+        receiptFileName = generatedPdfName;
+      } catch (pdfErr) {
+        console.error("PDF generation error:", pdfErr);
+      }
+    }
+
     // Create payment record
     const payment = await SectorPayment.create({
       sectorUnitId: Number(sectorUnitId),
       billingMonth: Number(billingMonth),
       billingYear: Number(billingYear),
       totalAmount: depositAmount,
-      transactionRef,
       bankName: bankName || 'Commercial Bank of Ethiopia',
-      receiptFile: req.file.filename,
+      transactionId: transactionId || null,
+      receiptFile: receiptFileName,
       approvalStatus: status,
       notes: notes || null,
       uploadedBy: req.userId,
@@ -99,14 +127,18 @@ exports.uploadSlip = async (req, res) => {
       isClosed: closed
     });
 
-    // Rename the initial file to follow naming convention
-    const ext = path.extname(req.file.filename);
-    const newFilename = `sector-payment-${payment.id}-v1${ext}`;
-    const oldPath = path.join(__dirname, '..', 'uploads', 'receipts', req.file.filename);
-    const newPath = path.join(__dirname, '..', 'uploads', 'receipts', newFilename);
-    fs.renameSync(oldPath, newPath);
-
-    await payment.update({ receiptFile: newFilename });
+    if (receiptFileName) {
+      // If it's an uploaded file or an auto-generated one, we rename it consistently
+      const ext = path.extname(receiptFileName);
+      const newFilename = `sector-payment-${payment.id}-v1${ext}`;
+      const oldPath = path.join(__dirname, '..', 'uploads', 'receipts', receiptFileName);
+      const newPath = path.join(__dirname, '..', 'uploads', 'receipts', newFilename);
+      
+      if (fs.existsSync(oldPath)) {
+        fs.renameSync(oldPath, newPath);
+        await payment.update({ receiptFile: newFilename });
+      }
+    }
 
     // Log the initial upload
     await SectorPaymentAuditLog.create({
@@ -121,7 +153,7 @@ exports.uploadSlip = async (req, res) => {
       success: true,
       message: status === 'FLAGGED'
         ? 'Sector payment slip uploaded but FLAGGED for review (exceeds collected member payments or validation checks).'
-        : 'Sector payment slip uploaded successfully. Pending admin approval.',
+        : (autoVerified ? 'Payment automatically verified and approved.' : 'Sector payment slip uploaded successfully. Pending admin approval.'),
       data: payment,
       validation
     });
@@ -448,8 +480,8 @@ exports.updateSectorPayment = async (req, res) => {
       billingMonth: newMonth,
       billingYear: newYear,
       totalAmount: newAmount,
-      transactionRef: req.body.transactionRef || payment.transactionRef,
       bankName: req.body.bankName || payment.bankName,
+      transactionId: req.body.transactionId !== undefined ? req.body.transactionId : payment.transactionId,
       notes: req.body.notes || payment.notes,
       receiptFile: finalReceiptFile,
       approvalStatus: finalApprovalStatus,

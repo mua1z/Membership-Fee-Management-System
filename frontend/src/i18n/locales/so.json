@@ -334,7 +334,6 @@
     "clear_conversation": "Clear Conversation",
     "upload_sector_payment_slip": "Upload Sector Payment Slip",
     "sector_payment_slip": "Sector Payment Slip",
-    "transaction_ref": "Transaction Reference",
     "bank_name": "Bank Name",
     "approval_status": "Approval Status",
     "verified_by": "Verified By",
@@ -743,7 +742,6 @@
     "annual": "Annual",
     "upload_slip": "Upload Sector Payment Slip",
     "submit_approval": "Submit for Approval",
-    "transaction_ref": "Transaction Reference",
     "verified_by": "Verified By",
     "verified_at": "Verified Date"
   },

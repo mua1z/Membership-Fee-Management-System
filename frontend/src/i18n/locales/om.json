@@ -335,7 +335,6 @@
     "upload_sector_payment_slip": "Upload Sector Payment Slip",
     "sector_payment_slip": "Sector Payment Slip",
     "total_amount": "Total Amount",
-    "transaction_ref": "Transaction Reference",
     "bank_name": "Bank Name",
     "approval_status": "Approval Status",
     "approved": "Approved",
@@ -749,7 +748,6 @@
     "rejected": "Kan Didame",
     "view_receipt": "Risiitii Laali",
     "total_amount": "Baay'ina Walii Galatti",
-    "transaction_ref": "Wabii Naqaalaa",
     "bank_name": "Maqaa Baankii",
     "verified_by": "Kan Mirkaneesse",
     "verified_at": "Guyyaa Mirkanaa'e"

@@ -233,6 +233,11 @@ const start = async () => {
     console.error('⚠️ Sector payments migration error:', e.message);
   }
   try {
+    require('./migrations/alter_sector_payments_transaction_id')();
+  } catch (e) {
+    console.error('⚠️ Sector payments transactionId migration error:', e.message);
+  }
+  try {
     require('./migrations/create_sector_payment_audit_logs')();
   } catch (e) {
     console.error('⚠️ Sector payment audit logs migration error:', e.message);

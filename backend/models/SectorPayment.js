@@ -12,8 +12,8 @@ const SectorPayment = sequelize.define('SectorPayment', {
   totalAmount: { type: DataTypes.DECIMAL(15, 2), allowNull: false },
 
   bankName:        { type: DataTypes.STRING(100), defaultValue: 'Commercial Bank of Ethiopia' },
-  transactionRef:  { type: DataTypes.STRING(100), allowNull: false },
-  receiptFile:     { type: DataTypes.STRING(255), allowNull: false },
+  transactionId:   { type: DataTypes.STRING(100), allowNull: true },
+  receiptFile:     { type: DataTypes.STRING(255), allowNull: true },
 
   approvalStatus: { type: DataTypes.ENUM('PENDING', 'APPROVED', 'REJECTED', 'CORRECTION_REQUESTED', 'REOPENED', 'FLAGGED'), defaultValue: 'PENDING' },
   verifiedBy:     { type: DataTypes.INTEGER, allowNull: true },

@@ -11,7 +11,6 @@ module.exports = async () => {
         billingYear INT NOT NULL,
         totalAmount DECIMAL(15,2) NOT NULL,
         bankName VARCHAR(100) DEFAULT 'Commercial Bank of Ethiopia',
-        transactionRef VARCHAR(100) NOT NULL,
         receiptFile VARCHAR(255) NOT NULL,
         approvalStatus ENUM('PENDING','APPROVED','REJECTED') DEFAULT 'PENDING',
         verifiedBy INT NULL,
@@ -34,6 +33,11 @@ module.exports = async () => {
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
     `);
     if (DEBUG_DB) console.log('✅ sector_payments table ready');
+
+    // Drop transactionRef column (removed from schema)
+    try {
+      await sequelize.query(`ALTER TABLE sector_payments DROP COLUMN transactionRef`);
+    } catch (_) { /* column may not exist */ }
 
     // Add columns if they don't exist (for existing tables)
     const newColumns = [

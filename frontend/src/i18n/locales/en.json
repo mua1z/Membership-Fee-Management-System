@@ -300,7 +300,6 @@
     "upload_sector_payment_slip": "Upload Sector Payment Slip",
     "sector_payment_slip": "Sector Payment Slip",
     "total_amount": "Total Amount",
-    "transaction_ref": "Transaction Reference",
     "bank_name": "Bank Name",
     "approval_status": "Approval Status",
     "pending": "Pending",
@@ -737,7 +736,6 @@
     "rejected": "Rejected",
     "view_receipt": "View Receipt",
     "total_amount": "Total Amount",
-    "transaction_ref": "Transaction Reference",
     "bank_name": "Bank Name",
     "verified_by": "Verified By",
     "verified_at": "Verified Date"

@@ -18,6 +18,7 @@ import ReceiptModal from '../components/ReceiptModal'
 import ConfirmDialog from '../components/ConfirmDialog'
 import DeleteAllConfirmDialog from '../components/DeleteAllConfirmDialog'
 import SectorPaymentModal from '../components/SectorPaymentModal'
+import SectorDepositMethodModal from '../components/SectorDepositMethodModal'
 import SectorPaymentAuditLogsModal from '../components/SectorPaymentAuditLogsModal'
 import { useToast } from '../components/Toast'
 
@@ -147,6 +148,7 @@ export default function Payments() {
   const [sectorPaymentPages, setSectorPaymentPages] = useState(0)
   const [sectorPaymentTotal, setSectorPaymentTotal] = useState(0)
   const [showSectorPaymentModal, setShowSectorPaymentModal] = useState(false)
+  const [showDepositMethodModal, setShowDepositMethodModal] = useState(false)
   const [editPayment, setEditPayment] = useState<any>(null)
   const [sectorModalMode, setSectorModalMode] = useState<'create' | 'edit' | 'correct'>('create')
   const [showAuditLogsModal, setShowAuditLogsModal] = useState(false)
@@ -713,7 +715,7 @@ export default function Payments() {
         <div className="flex items-center gap-2">
           {activeTab === 'sector' && (
             <button
-              onClick={() => { setEditPayment(null); setSectorModalMode('create'); setShowSectorPaymentModal(true) }}
+              onClick={() => { setEditPayment(null); setSectorModalMode('create'); setShowDepositMethodModal(true) }}
               className="btn btn-primary flex items-center gap-2"
             >
               <Upload className="w-4 h-4" />
@@ -1256,7 +1258,6 @@ export default function Payments() {
                   <th>Period</th>
                   <th>Sector Unit</th>
                   <th>Amount (ETB)</th>
-                  <th>Transaction Ref</th>
                   <th>Approval Status</th>
                   <th>Validation</th>
                   <th>Receipt</th>
@@ -1293,7 +1294,6 @@ export default function Payments() {
                       </td>
                       <td className="text-xs font-sans">{sp.sectorUnit?.name || sp.sectorUnitId}</td>
                       <td className="font-bold text-sm">{Number(sp.totalAmount).toLocaleString()}</td>
-                      <td className="text-xs font-mono">{sp.transactionRef}</td>
                       <td>
                         <span className={`badge ${
                           sp.approvalStatus === 'APPROVED' ? 'badge-success' :
@@ -1316,7 +1316,11 @@ export default function Payments() {
                         </span>
                       </td>
                       <td>
-                        {sp.receiptFile ? (
+                        {sp.transactionId ? (
+                           <span className="text-xs font-bold font-sans text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 px-2 py-1 rounded">
+                             TID: {sp.transactionId}
+                           </span>
+                        ) : sp.receiptFile ? (
                           <a
                             href={`/uploads/receipts/${sp.receiptFile}`}
                             target="_blank"
@@ -1444,6 +1448,18 @@ export default function Payments() {
         />
       )}
 
+      {/* Method-chooser modal for NEW sector deposits */}
+      {showDepositMethodModal && (
+        <SectorDepositMethodModal
+          onClose={() => setShowDepositMethodModal(false)}
+          onSuccess={() => {
+            setShowDepositMethodModal(false)
+            fetchSectorPayments()
+          }}
+        />
+      )}
+
+      {/* Direct edit / correction modal (no method-chooser needed) */}
       {showSectorPaymentModal && (
         <SectorPaymentModal
           onClose={() => { setShowSectorPaymentModal(false); setEditPayment(null) }}

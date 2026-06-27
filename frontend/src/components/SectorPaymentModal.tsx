@@ -33,8 +33,8 @@ export default function SectorPaymentModal({ onClose, onSuccess, editPayment, mo
   const [totalAmount, setTotalAmount] = useState(
     editPayment ? String(editPayment.totalAmount) : ''
   )
-  const [transactionRef, setTransactionRef] = useState(
-    editPayment ? editPayment.transactionRef : ''
+  const [transactionId, setTransactionId] = useState(
+    editPayment ? (editPayment.transactionId || '') : ''
   )
   const [notes, setNotes] = useState(
     editPayment ? (editPayment.notes || '') : ''
@@ -138,8 +138,7 @@ export default function SectorPaymentModal({ onClose, onSuccess, editPayment, mo
     isOfficerFlagged ||
     !selectedSectorId ||
     !totalAmount ||
-    !transactionRef ||
-    (mode === 'create' && !file) || // file is required only when creating
+    (mode === 'create' && !file && !transactionId) || // file or TID is required when creating
     (editPayment?.approvalStatus === 'APPROVED' && user?.role === 'admin' && mode === 'edit' && !reason.trim()) ||
     (mode === 'correct' && !reason.trim()) // correction reason is required
 
@@ -167,7 +166,7 @@ export default function SectorPaymentModal({ onClose, onSuccess, editPayment, mo
   }
 
   const handleSubmit = async () => {
-    if (!selectedSectorId || !totalAmount || !transactionRef) {
+    if (!selectedSectorId || !totalAmount) {
       setError('Please fill all required fields.')
       return
     }
@@ -180,9 +179,11 @@ export default function SectorPaymentModal({ onClose, onSuccess, editPayment, mo
     formData.append('billingMonth', String(billingMonth))
     formData.append('billingYear', String(billingYear))
     formData.append('totalAmount', totalAmount)
-    formData.append('transactionRef', transactionRef)
     formData.append('bankName', 'Commercial Bank of Ethiopia')
     formData.append('notes', notes)
+    if (transactionId) {
+      formData.append('transactionId', transactionId)
+    }
     if (file) {
       formData.append('receipt', file)
     }
@@ -487,17 +488,24 @@ export default function SectorPaymentModal({ onClose, onSuccess, editPayment, mo
 
             <div>
               <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Bank Name</label>
-              <input type="text" value="Commercial Bank of Ethiopia" disabled className="input bg-slate-50 dark:bg-slate-800 text-slate-500 font-sans" />
+              <input type="text" value={editPayment?.bankName || 'Commercial Bank of Ethiopia'} disabled className="input bg-slate-50 dark:bg-slate-800 text-slate-500 font-sans" />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Transaction Reference <span className="text-red-500">*</span></label>
-              <input type="text" value={transactionRef} onChange={(e) => setTransactionRef(e.target.value)} placeholder="e.g. CBE-2024-001234" className="input" />
+              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Transaction ID (TID)</label>
+              <input
+                type="text"
+                value={transactionId}
+                disabled={isFormReadOnly}
+                onChange={(e) => setTransactionId(e.target.value)}
+                placeholder="Optional (if Direct Pay was used)"
+                className="input font-sans"
+              />
             </div>
 
             <div>
               <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">
-                Upload Receipt (JPG, PNG, PDF) {mode === 'create' && <span className="text-red-500">*</span>}
+                Upload Receipt (JPG, PNG, PDF) {mode === 'create' && !transactionId && <span className="text-red-500">*</span>}
               </label>
               <div className="border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl p-4 text-center hover:border-amber-400 dark:hover:border-amber-500 transition-colors cursor-pointer relative">
                 <input type="file" accept=".jpg,.jpeg,.png,.pdf" onChange={handleFileChange} className="absolute inset-0 opacity-0 cursor-pointer" />
